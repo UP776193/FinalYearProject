@@ -6,19 +6,22 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.ClipData;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.DragEvent;
 import android.view.View;
 import android.widget.TextView;
 
-public class MainProblemActivity extends AppCompatActivity {
+import static java.security.AccessController.getContext;
+
+public class ProblemActivity extends AppCompatActivity {
 
     TextView block1, block2, block3, block4, target;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.problemlayout);
+        setContentView(R.layout.activity_problem);
         target = findViewById(R.id.tvProblemWindow);
         String problem =
                 "public void addTo25() {\n" +
@@ -48,8 +51,8 @@ public class MainProblemActivity extends AppCompatActivity {
         @Override
         public boolean onLongClick(View v) {
             ClipData data = ClipData.newPlainText("","");
-            View.DragShadowBuilder myShadwoBuilder = new View.DragShadowBuilder(v);
-            v.startDragAndDrop(data, myShadwoBuilder, v, 0);
+            View.DragShadowBuilder myShadowBuilder = new View.DragShadowBuilder(v);
+            v.startDragAndDrop(data, myShadowBuilder, v, 0);
             return true;
         }
     };
@@ -61,6 +64,9 @@ public class MainProblemActivity extends AppCompatActivity {
             int dragEvent = event.getAction();
 
             switch(dragEvent) {
+                case DragEvent.ACTION_DRAG_STARTED:
+                    target.setText("Something is being dragged");
+                    break;
                 case DragEvent.ACTION_DRAG_ENTERED:
                     final View view = (View) event.getLocalState();
                     if (view.getId() == R.id.block1){
@@ -72,7 +78,6 @@ public class MainProblemActivity extends AppCompatActivity {
                 case DragEvent.ACTION_DROP:
                     break;
             }
-
             return true;
         }
     };
@@ -120,5 +125,34 @@ public class MainProblemActivity extends AppCompatActivity {
         });
         AlertDialog alert = builder.create();
         alert.show();
+    }
+
+    public void back(View view) {
+        boolean x = false;
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+        builder.setTitle("Go Back");
+        builder.setMessage("Are you sure you want to return to the homepage? All unsaved progress will be lost.");
+
+        builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                //Return to the Homepage
+                dialog.dismiss();
+            }
+        });
+
+        builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // Do nothing but close the dialog
+                dialog.dismiss();
+            }
+        });
+        AlertDialog alert = builder.create();
+        alert.show();
+        if(x) {
+            Intent intent = new Intent(this, HomepageActivity.class);
+            startActivity(intent);
+        }
     }
 }

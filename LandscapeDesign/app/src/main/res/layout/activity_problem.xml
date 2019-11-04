@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainProblemActivity">
+    tools:context=".ProblemActivity">
 
     <TextView
         android:id="@+id/tvProblemWindow"
@@ -16,6 +16,8 @@
         android:layout_marginEnd="16dp"
         android:layout_marginRight="16dp"
         android:layout_marginBottom="16dp"
+        android:background="@drawable/textview_border"
+        android:padding="10dp"
         android:textColor="@android:color/black"
         android:typeface="monospace"
         app:fontFamily="monospace"
