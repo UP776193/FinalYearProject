@@ -5,6 +5,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.ClipData;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Build;
@@ -65,17 +66,23 @@ public class ProblemActivity extends AppCompatActivity {
 
             switch(dragEvent) {
                 case DragEvent.ACTION_DRAG_STARTED:
-                    target.setText("Something is being dragged");
+                    target.setText("A block is being dragged");
                     break;
                 case DragEvent.ACTION_DRAG_ENTERED:
-                    final View view = (View) event.getLocalState();
-                    if (view.getId() == R.id.block1){
-                        target.setText("Block 1 has been dragged here");
-                    }
                     break;
                 case DragEvent.ACTION_DRAG_EXITED:
                     break;
                 case DragEvent.ACTION_DROP:
+                    final View view = (View) event.getLocalState();
+                    if (view.getId() == R.id.block1){
+                        target.setText("Block 1 has been dropped here");
+                    } else if (view.getId() == R.id.block2) {
+                        target.setText("Block 2 has been dropped here");
+                    } else if (view.getId() == R.id.block3) {
+                        target.setText("Block 3 has been dropped here");
+                    } else if (view.getId() == R.id.block4) {
+                        target.setText("Block 4 has been dropped here");
+                    }
                     break;
             }
             return true;
@@ -136,7 +143,8 @@ public class ProblemActivity extends AppCompatActivity {
         builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
                 //Return to the Homepage
-                dialog.dismiss();
+                Intent intent = new Intent(getBaseContext(), HomepageActivity.class);
+                startActivity(intent);
             }
         });
 
@@ -154,15 +162,25 @@ public class ProblemActivity extends AppCompatActivity {
     public void submit(View view) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
-        builder.setTitle("CORRECT/WRONG");
-        builder.setMessage("NOTIFY USER IS ANSWER CORRECT/INCORRECT");
-
-        builder.setNeutralButton("Dismiss", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-            }
-        });
+        if(target.getText() == "Block 1 has been dropped here") {
+            builder.setTitle("CORRECT");
+            builder.setMessage("Block 1 is the correct answer");
+            builder.setNeutralButton("Next Question", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                }
+            });
+        } else {
+            builder.setTitle("INCORRECT");
+            builder.setMessage("The dragged block is incorrect");
+            builder.setNeutralButton("Try ", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                }
+            });
+        }
         AlertDialog alert = builder.create();
         alert.show();
     }
