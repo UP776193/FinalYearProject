@@ -25,11 +25,11 @@ public class ProblemActivity extends AppCompatActivity {
         target = findViewById(R.id.tvProblemWindow);
         String problem =
                 "public void addTo25() {\n" +
-                "     int x = 0;\n" +
-                "     for (int i = 0; i<4; i++) {\n" +
-                "           x += 5;\n" +
-                "     }\n" +
-                "     return x;\n" +
+                "\t\t\tint x = 0;\n" +
+                "\t\t\tfor (int i = 0; i<4; i++) {\n" +
+                "\t\t\t\t\t\tx += 5;\n" +
+                "\t\t\t}\n" +
+                "\t\t\treturn x;\n" +
                 "}";
         target.setText(problem);
 
@@ -128,7 +128,6 @@ public class ProblemActivity extends AppCompatActivity {
     }
 
     public void back(View view) {
-        boolean x = false;
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
         builder.setTitle("Go Back");
@@ -150,9 +149,21 @@ public class ProblemActivity extends AppCompatActivity {
         });
         AlertDialog alert = builder.create();
         alert.show();
-        if(x) {
-            Intent intent = new Intent(this, HomepageActivity.class);
-            startActivity(intent);
-        }
+    }
+
+    public void submit(View view) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+        builder.setTitle("CORRECT/WRONG");
+        builder.setMessage("NOTIFY USER IS ANSWER CORRECT/INCORRECT");
+
+        builder.setNeutralButton("Dismiss", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        AlertDialog alert = builder.create();
+        alert.show();
     }
 }
