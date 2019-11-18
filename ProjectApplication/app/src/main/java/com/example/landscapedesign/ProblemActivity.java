@@ -1,26 +1,34 @@
 package com.example.landscapedesign;
 
-import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.ClipData;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.DragEvent;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
 
 public class ProblemActivity extends AppCompatActivity {
 
+    String[][] problem;
+    RelativeLayout rl;
     TextView block1, block2, block3, block4, block5, block6, block7, block8, slot1, slot2, slot3;
+
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_problem);
+
+        rl = (RelativeLayout) findViewById(R.id.rlayout);
 
         block1 = findViewById(R.id.block1);
         block2 = findViewById(R.id.block2);
@@ -31,19 +39,6 @@ public class ProblemActivity extends AppCompatActivity {
         block7 = findViewById(R.id.block7);
         block8 = findViewById(R.id.block8);
 
-        slot1 = findViewById(R.id.slot1);
-        slot2 = findViewById(R.id.slot2);
-        slot3 = findViewById(R.id.slot3);
-
-        //block1.setOnLongClickListener(longclickListener);
-        //block2.setOnLongClickListener(longclickListener);
-        //block3.setOnLongClickListener(longclickListener);
-        //block4.setOnLongClickListener(longclickListener);
-        //block5.setOnLongClickListener(longclickListener);
-        //block6.setOnLongClickListener(longclickListener);
-        //block7.setOnLongClickListener(longclickListener);
-        //block8.setOnLongClickListener(longclickListener);
-
         block1.setOnTouchListener(new BlockTouchListener());
         block2.setOnTouchListener(new BlockTouchListener());
         block3.setOnTouchListener(new BlockTouchListener());
@@ -53,18 +48,66 @@ public class ProblemActivity extends AppCompatActivity {
         block7.setOnTouchListener(new BlockTouchListener());
         block8.setOnTouchListener(new BlockTouchListener());
 
-        slot1.setOnDragListener(new SlotDragListener());
-        slot2.setOnDragListener(new SlotDragListener());
-        slot3.setOnDragListener(new SlotDragListener());
 
-        //target.setOnDragListener(dragListenre);
+        problem = new String[][]{
+                {"public int addTo25() {"},
+                {"  ","______","x = 0;"},
+                {"  for (int i = 0;i<5;i","______",") {"},
+                {"      x += ","______",";"},
+                {"  }"},
+                {"  return","______",";"},
+                {"}"}
+        };
+
+        TextView tv1 = new TextView(this);
+        tv1.setId((int) System.currentTimeMillis());
+        tv1.setText("");
+        View recentView = tv1;
+
+        for(int i = 0; i<problem.length;i++) {
+
+            TextView tv = createTextView(problem[i][0]); //Create new text view
+            RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams((int) RelativeLayout.LayoutParams.WRAP_CONTENT, (int) RelativeLayout.LayoutParams.WRAP_CONTENT); //set to wrap content
+            params.addRule(RelativeLayout.BELOW, recentView.getId()); //position underneath last object
+            tv.setLayoutParams(params);
+            View recentListView = tv;
+            rl.addView(tv);
+
+            for(int j = 1; j<problem[i].length;j++) {
+
+                TextView tvl = createTextView(problem[i][j]); //Create new text view
+                params = new RelativeLayout.LayoutParams((int) RelativeLayout.LayoutParams.WRAP_CONTENT, (int) RelativeLayout.LayoutParams.WRAP_CONTENT); //set to wrap content
+                params.addRule(RelativeLayout.RIGHT_OF, recentListView.getId()); //position underneath last object
+                params.addRule(RelativeLayout.BELOW, recentView.getId()); //position underneath last object
+                tvl.setLayoutParams(params);
+                recentListView = tvl;
+                rl.addView(tvl);
+            }
+            recentView = tv;
+        }
+
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    private TextView createTextView(String text) {
+        TextView tv = new TextView(this);
+        tv.setId((int) System.currentTimeMillis());
+        tv.setText(text);
+        tv.setPadding(20,20,20,20);
+        tv.setTextAppearance(R.style.problemText);
+        if(text.contains("______")){
+            tv.setText("      ");
+            tv.setBackgroundResource(R.color.colorSlots);
+            tv.setOnDragListener(new SlotDragListener());
+        }
+        return tv;
     }
 
     private final class BlockTouchListener implements View.OnTouchListener {
 
         @RequiresApi(api = Build.VERSION_CODES.N)
         public boolean onTouch(View view, MotionEvent motionEvent) {
-            if(motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
+            if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
                 ClipData data = ClipData.newPlainText("", "");
                 View.DragShadowBuilder shadowBuilder = new View.DragShadowBuilder(view);
                 view.startDragAndDrop(data, shadowBuilder, view, 0);
@@ -92,12 +135,12 @@ public class ProblemActivity extends AppCompatActivity {
                     //handle the dragged view being dropped over a drop view
                     View view = (View) event.getLocalState();
                     view.setVisibility(View.INVISIBLE);
-                    TextView dropTarget = (TextView) v;
-                    TextView dropped = (TextView) view;
+                    TextView dropTarget = (TextView) v; //gets slot
+                    TextView dropped = (TextView) view; //gets origin of block
                     dropTarget.setText(dropped.getText());
                     Object tag = dropTarget.getTag();
-                    if(tag != null) {
-                        int existingID = (Integer)tag;
+                    if (tag != null) {
+                        int existingID = (Integer) tag;
                         findViewById(existingID).setVisibility(View.VISIBLE);
                     }
                     dropTarget.setTag(dropped.getId());
@@ -112,52 +155,6 @@ public class ProblemActivity extends AppCompatActivity {
         }
     }
 
-
-    View.OnLongClickListener longclickListener = new View.OnLongClickListener() {
-        @RequiresApi(api = Build.VERSION_CODES.N)
-        @Override
-        public boolean onLongClick(View v) {
-            ClipData data = ClipData.newPlainText("","");
-            View.DragShadowBuilder myShadowBuilder = new View.DragShadowBuilder(v);
-            v.startDragAndDrop(data, myShadowBuilder, v, 0);
-            return true;
-        }
-    };
-
-    /*
-    View.OnDragListener dragListenre = new View.OnDragListener(){
-
-        @Override
-        public boolean onDrag(View v, DragEvent event) {
-            int dragEvent = event.getAction();
-
-            switch(dragEvent) {
-                case DragEvent.ACTION_DRAG_STARTED:
-                    target.setText("A block is being dragged");
-                    break;
-                case DragEvent.ACTION_DRAG_ENTERED:
-                    break;
-                case DragEvent.ACTION_DRAG_EXITED:
-                    break;
-                case DragEvent.ACTION_DROP:
-                    final View view = (View) event.getLocalState();
-                    if (view.getId() == R.id.block1){
-                        target.setText("Block 1 has been dropped here");
-                    } else if (view.getId() == R.id.block2) {
-                        target.setText("Block 2 has been dropped here");
-                    } else if (view.getId() == R.id.block3) {
-                        target.setText("Block 3 has been dropped here");
-                    } else if (view.getId() == R.id.block4) {
-                        target.setText("Block 4 has been dropped here");
-                    }
-                    break;
-            }
-            return true;
-        }
-    };
-
-     */
-
     public void skip(View view) {
         //found @https://stackoverflow.com/questions/2478517/how-to-display-a-yes-no-dialog-box-on-android
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -168,9 +165,6 @@ public class ProblemActivity extends AppCompatActivity {
         builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
                 // Do nothing but close the dialog
-                String message = "You have skipped me!";
-                TextView problemText = findViewById(R.id.slot1);
-                problemText.setText(message);
                 dialog.dismiss();
             }
         });
@@ -178,9 +172,7 @@ public class ProblemActivity extends AppCompatActivity {
         builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                String message = "You have NOT skipped me!";
-                TextView problemText = findViewById(R.id.slot1);
-                problemText.setText(message);
+
                 dialog.dismiss();
             }
         });
@@ -231,7 +223,7 @@ public class ProblemActivity extends AppCompatActivity {
     public void submit(View view) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
-        if(checkCorrect()) {
+        if (checkCorrect()) {
             builder.setTitle("CORRECT");
             builder.setMessage("Block 1 is the correct answer");
             builder.setNeutralButton("Next Question", new DialogInterface.OnClickListener() {
