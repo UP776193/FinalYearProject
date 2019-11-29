@@ -18,7 +18,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class ProblemActivity extends AppCompatActivity {
 
-    String[][] problem;
+    Problem problem;
+    Block block;
     RelativeLayout rl;
     TextView block1, block2, block3, block4, block5, block6, block7, block8, slot1, slot2, slot3;
 
@@ -49,42 +50,8 @@ public class ProblemActivity extends AppCompatActivity {
         block8.setOnTouchListener(new BlockTouchListener());
 
 
-        problem = new String[][]{
-                {"public int addTo25() {"},
-                {"  ","______","x = 0;"},
-                {"  for (int i = 0;i<5;i","______",") {"},
-                {"      x += ","______",";"},
-                {"  }"},
-                {"  return","______",";"},
-                {"}"}
-        };
-
-        TextView tv1 = new TextView(this);
-        tv1.setId((int) System.currentTimeMillis());
-        tv1.setText("");
-        View recentView = tv1;
-
-        for(int i = 0; i<problem.length;i++) {
-
-            TextView tv = createTextView(problem[i][0]); //Create new text view
-            RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams((int) RelativeLayout.LayoutParams.WRAP_CONTENT, (int) RelativeLayout.LayoutParams.WRAP_CONTENT); //set to wrap content
-            params.addRule(RelativeLayout.BELOW, recentView.getId()); //position underneath last object
-            tv.setLayoutParams(params);
-            View recentListView = tv;
-            rl.addView(tv);
-
-            for(int j = 1; j<problem[i].length;j++) {
-
-                TextView tvl = createTextView(problem[i][j]); //Create new text view
-                params = new RelativeLayout.LayoutParams((int) RelativeLayout.LayoutParams.WRAP_CONTENT, (int) RelativeLayout.LayoutParams.WRAP_CONTENT); //set to wrap content
-                params.addRule(RelativeLayout.RIGHT_OF, recentListView.getId()); //position underneath last object
-                params.addRule(RelativeLayout.BELOW, recentView.getId()); //position underneath last object
-                tvl.setLayoutParams(params);
-                recentListView = tvl;
-                rl.addView(tvl);
-            }
-            recentView = tv;
-        }
+        problem = new Problem();
+        printProblemLines();
 
     }
 
@@ -101,58 +68,6 @@ public class ProblemActivity extends AppCompatActivity {
             tv.setOnDragListener(new SlotDragListener());
         }
         return tv;
-    }
-
-    private final class BlockTouchListener implements View.OnTouchListener {
-
-        @RequiresApi(api = Build.VERSION_CODES.N)
-        public boolean onTouch(View view, MotionEvent motionEvent) {
-            if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
-                ClipData data = ClipData.newPlainText("", "");
-                View.DragShadowBuilder shadowBuilder = new View.DragShadowBuilder(view);
-                view.startDragAndDrop(data, shadowBuilder, view, 0);
-                return true;
-            } else {
-                return false;
-            }
-        }
-
-    }
-
-    private class SlotDragListener implements View.OnDragListener {
-        public boolean onDrag(View v, DragEvent event) {
-            switch (event.getAction()) {
-                case DragEvent.ACTION_DRAG_STARTED:
-                    //no action necessary
-                    break;
-                case DragEvent.ACTION_DRAG_ENTERED:
-                    //no action necessary
-                    break;
-                case DragEvent.ACTION_DRAG_EXITED:
-                    //no action necessary
-                    break;
-                case DragEvent.ACTION_DROP:
-                    //handle the dragged view being dropped over a drop view
-                    View view = (View) event.getLocalState();
-                    view.setVisibility(View.INVISIBLE);
-                    TextView dropTarget = (TextView) v; //gets slot
-                    TextView dropped = (TextView) view; //gets origin of block
-                    dropTarget.setText(dropped.getText());
-                    Object tag = dropTarget.getTag();
-                    if (tag != null) {
-                        int existingID = (Integer) tag;
-                        findViewById(existingID).setVisibility(View.VISIBLE);
-                    }
-                    dropTarget.setTag(dropped.getId());
-                    break;
-                case DragEvent.ACTION_DRAG_ENDED:
-                    //no action necessary
-                    break;
-                default:
-                    break;
-            }
-            return true;
-        }
     }
 
     public void skip(View view) {
@@ -225,7 +140,7 @@ public class ProblemActivity extends AppCompatActivity {
 
         if (checkCorrect()) {
             builder.setTitle("CORRECT");
-            builder.setMessage("Block 1 is the correct answer");
+            builder.setMessage("com.example.landscapedesign.Block 1 is the correct answer");
             builder.setNeutralButton("Next Question", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
@@ -249,4 +164,94 @@ public class ProblemActivity extends AppCompatActivity {
     public boolean checkCorrect() {
         return true;
     }
-}
+
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    public void printProblemLines() {
+        String[][] problemLines = problem.getProbLines();
+
+        View recentView = null;
+
+        for(int i = 0; i<problemLines.length;i++) {
+
+            TextView tv = createTextView(problemLines[i][0]); //Create new text view
+            RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams((int) RelativeLayout.LayoutParams.WRAP_CONTENT, (int) RelativeLayout.LayoutParams.WRAP_CONTENT); //set to wrap content
+            if(recentView == null) {
+                params.addRule(RelativeLayout.ALIGN_PARENT_TOP);
+            } else {
+                params.addRule(RelativeLayout.BELOW, recentView.getId()); //position underneath last object
+            }
+            tv.setLayoutParams(params);
+            View recentListView = tv;
+            rl.addView(tv);
+
+            for(int j = 1; j<problemLines[i].length;j++) {
+
+                TextView tvl = createTextView(problemLines[i][j]); //Create new text view
+                params = new RelativeLayout.LayoutParams((int) RelativeLayout.LayoutParams.WRAP_CONTENT, (int) RelativeLayout.LayoutParams.WRAP_CONTENT); //set to wrap content
+                if(recentView == null) {
+                    params.addRule(RelativeLayout.ALIGN_PARENT_TOP);
+                } else {
+                    params.addRule(RelativeLayout.BELOW, recentView.getId()); //position underneath last object
+                }
+                params.addRule(RelativeLayout.RIGHT_OF, recentListView.getId()); //position underneath last object
+                tvl.setLayoutParams(params);
+                recentListView = tvl;
+                rl.addView(tvl);
+            }
+            recentView = tv;
+        }
+    }
+
+    private final class BlockTouchListener implements View.OnTouchListener {
+
+        @RequiresApi(api = Build.VERSION_CODES.N)
+        public boolean onTouch(View view, MotionEvent motionEvent) {
+            if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
+                ClipData data = ClipData.newPlainText("", "");
+                View.DragShadowBuilder shadowBuilder = new View.DragShadowBuilder(view);
+                view.startDragAndDrop(data, shadowBuilder, view, 0);
+                return true;
+            } else {
+                return false;
+            }
+        }
+
+    }
+
+    private class SlotDragListener implements View.OnDragListener {
+        public boolean onDrag(View v, DragEvent event) {
+            switch (event.getAction()) {
+                case DragEvent.ACTION_DRAG_STARTED:
+                    //no action necessary
+                    break;
+                case DragEvent.ACTION_DRAG_ENTERED:
+                    //no action necessary
+                    break;
+                case DragEvent.ACTION_DRAG_EXITED:
+                    //no action necessary
+                    break;
+                case DragEvent.ACTION_DROP:
+                    //handle the dragged view being dropped over a drop view
+                    View view = (View) event.getLocalState();
+                    view.setVisibility(View.INVISIBLE);
+                    TextView dropTarget = (TextView) v; //gets slot
+                    TextView dropped = (TextView) view; //gets origin of block
+                    dropTarget.setText(dropped.getText());
+                    Object tag = dropTarget.getTag();
+                    if (tag != null) {
+                        int existingID = (Integer) tag;
+                        findViewById(existingID).setVisibility(View.VISIBLE);
+                    }
+                    dropTarget.setTag(dropped.getId());
+                    break;
+                case DragEvent.ACTION_DRAG_ENDED:
+                    //no action necessary
+                    break;
+                default:
+                    break;
+            }
+            return true;
+        }
+    }
+
+    }
