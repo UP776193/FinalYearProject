@@ -5,7 +5,7 @@ import java.util.ArrayList;
 public class Problem {
 
     private int problemID;
-    private ArrayList<Block> blocks;
+    private Block[] blocks = new Block[8];
     private String probDesc;
     private String[][] probLines;
     private String[] solution;
@@ -15,6 +15,7 @@ public class Problem {
         this.probDesc = probDesc;
         this.probLines = probLines;
         this.solution = solution;
+        this.blocks = new Block[8];
     }
 
     public Problem() {
@@ -33,19 +34,23 @@ public class Problem {
                 {"  return","______",";"},
                 {"}"}
         };
+        String[] blockTexts = new String[] {
+                "x","5","--","int","String","1", "++", "Boolean"
+        };
+
+        for(int i=0;i<8;i++) {
+            blocks[i] = new Block(blockTexts[i]);
+        }
+
         this.solution = new String []{};
     }
 
-    public void addBlock(Block block) {
-        blocks.add(block);
-    }
-
-    public ArrayList<Block> getBlocks() {
+    public Block[] getBlocks() {
         return blocks;
     }
 
-    public void setBlocks(ArrayList<Block> blocks) {
-        this.blocks = blocks;
+    public void setBlocks(Block block, int index) {
+        this.blocks[index] = block;
     }
 
     public String getProbDesc() {

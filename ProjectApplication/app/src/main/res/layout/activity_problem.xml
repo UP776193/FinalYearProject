@@ -4,17 +4,17 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/colorPrimary"
     tools:context=".ProblemActivity">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/sidebarLayout"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="8dp"
+        android:background="@color/layoutBackground"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/rlayout"
+        app:layout_constraintStart_toEndOf="@+id/vlayout"
         app:layout_constraintTop_toTopOf="parent">
 
         <Button
@@ -45,6 +45,7 @@
 
         <Button
             android:id="@+id/btnSubmit"
+            style="@android:style/Widget.Material.Button"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
@@ -87,6 +88,42 @@
             app:layout_constraintTop_toBottomOf="@+id/btnViewProblem">
 
             <TextView
+                android:id="@+id/block0"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:background="@color/colorBlocks"
+                android:gravity="center"
+                android:text="a"
+                android:textAppearance="@style/problemText"
+                app:layout_constraintBottom_toTopOf="@+id/block1"
+                app:layout_constraintEnd_toStartOf="@+id/block4"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/block4"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginRight="8dp"
+                android:layout_marginBottom="8dp"
+                android:background="@color/colorBlocks"
+                android:gravity="center"
+                android:text="e"
+                android:textAppearance="@style/problemText"
+                app:layout_constraintBottom_toTopOf="@+id/block5"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/block0"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
                 android:id="@+id/block1"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
@@ -96,12 +133,12 @@
                 android:layout_marginBottom="8dp"
                 android:background="@color/colorBlocks"
                 android:gravity="center"
-                android:text="x"
+                android:text="b"
                 android:textAppearance="@style/problemText"
                 app:layout_constraintBottom_toTopOf="@+id/block2"
                 app:layout_constraintEnd_toStartOf="@+id/block5"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toBottomOf="@+id/block0" />
 
             <TextView
                 android:id="@+id/block5"
@@ -115,12 +152,12 @@
                 android:layout_marginBottom="8dp"
                 android:background="@color/colorBlocks"
                 android:gravity="center"
-                android:text="String"
+                android:text="f"
                 android:textAppearance="@style/problemText"
                 app:layout_constraintBottom_toTopOf="@+id/block6"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/block1"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toBottomOf="@+id/block4" />
 
             <TextView
                 android:id="@+id/block2"
@@ -132,7 +169,7 @@
                 android:layout_marginBottom="8dp"
                 android:background="@color/colorBlocks"
                 android:gravity="center"
-                android:text="5"
+                android:text="c"
                 android:textAppearance="@style/problemText"
                 app:layout_constraintBottom_toTopOf="@+id/block3"
                 app:layout_constraintEnd_toStartOf="@+id/block6"
@@ -151,7 +188,7 @@
                 android:layout_marginBottom="8dp"
                 android:background="@color/colorBlocks"
                 android:gravity="center"
-                android:text="1"
+                android:text="g"
                 android:textAppearance="@style/problemText"
                 app:layout_constraintBottom_toTopOf="@+id/block7"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -168,12 +205,13 @@
                 android:layout_marginBottom="8dp"
                 android:background="@color/colorBlocks"
                 android:gravity="center"
-                android:text="--"
+                android:text="d"
                 android:textAppearance="@style/problemText"
-                app:layout_constraintBottom_toTopOf="@+id/block4"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/block7"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/block2" />
+                app:layout_constraintTop_toBottomOf="@+id/block2"
+                app:layout_constraintVertical_bias="0.651" />
 
             <TextView
                 android:id="@+id/block7"
@@ -187,58 +225,22 @@
                 android:layout_marginBottom="8dp"
                 android:background="@color/colorBlocks"
                 android:gravity="center"
-                android:text="++"
+                android:text="h"
                 android:textAppearance="@style/problemText"
-                app:layout_constraintBottom_toTopOf="@+id/block8"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/block3"
                 app:layout_constraintTop_toBottomOf="@+id/block6" />
 
-            <TextView
-                android:id="@+id/block4"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:layout_marginStart="8dp"
-                android:layout_marginLeft="8dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="8dp"
-                android:background="@color/colorBlocks"
-                android:gravity="center"
-                android:text="int"
-                android:textAppearance="@style/problemText"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/block8"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/block3"
-                app:layout_constraintVertical_bias="0.651" />
-
-            <TextView
-                android:id="@+id/block8"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:layout_marginStart="8dp"
-                android:layout_marginLeft="8dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginRight="8dp"
-                android:layout_marginBottom="8dp"
-                android:background="@color/colorBlocks"
-                android:gravity="center"
-                android:text="boolean"
-                android:textAppearance="@style/problemText"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/block4"
-                app:layout_constraintTop_toBottomOf="@+id/block7" />
-
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <RelativeLayout
-        android:id="@+id/rlayout"
-        android:layout_width="400dp"
+    <LinearLayout
+        android:id="@+id/vlayout"
+        android:layout_width="450dp"
         android:layout_height="0dp"
-        android:background="@drawable/textview_border"
+        android:background="@color/layoutBackground"
+        android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/sidebarLayout"
         app:layout_constraintStart_toStartOf="parent"

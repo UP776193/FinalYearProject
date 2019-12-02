@@ -6,23 +6,24 @@ public class Block {
     private int original;
     private int previous;
     private String text;
-    private int ID;
 
 
-    public Block(int current, int original, int previous, String text, int ID) {
+    public Block(int current, int original, int previous, String text){
         this.current = current;
         this.original = original;
         this.previous = previous;
         this.text = text;
-        this.ID = ID;
     }
 
-    public Block(int blockID, String text, int ID){
+    public Block(int blockID, String text){
         this.current = blockID;
         this.original = blockID;
         this.previous = blockID;
         this.text = text;
-        this.ID = ID;
+    }
+
+    public Block(String text){
+        this.text = text;
     }
 
     public int getCurrent() {
@@ -57,11 +58,4 @@ public class Block {
         this.text = text;
     }
 
-    public int getID() {
-        return ID;
-    }
-
-    public void setID(int ID) {
-        this.ID = ID;
-    }
 }

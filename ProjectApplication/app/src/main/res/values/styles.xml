@@ -8,12 +8,14 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
-    <color name = "black">#000000</color>
-
     <style name="problemText" parent="@android:style/TextAppearance.Medium">
         <item name="android:textSize">14sp</item>
         <item name="android:typeface">monospace</item>
-        <item name="android:textColor">@color/black</item>
+        <item name="android:textColor">@color/colorText</item>
+    </style>
+
+    <style name="button">
+
     </style>
 
 </resources>

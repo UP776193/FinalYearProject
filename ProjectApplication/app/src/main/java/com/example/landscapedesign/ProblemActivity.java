@@ -3,25 +3,28 @@ package com.example.landscapedesign;
 import android.content.ClipData;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.DragEvent;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.RelativeLayout;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import java.io.SyncFailedException;
+import java.util.ArrayList;
+
 public class ProblemActivity extends AppCompatActivity {
 
     Problem problem;
-    Block block;
-    RelativeLayout rl;
-    TextView block1, block2, block3, block4, block5, block6, block7, block8, slot1, slot2, slot3;
+    LinearLayout vlayout;
+    TextView[] blocks; //Used to keep track of movable blocks in activity
+    ArrayList<TextView> slots;
+    Block[] probBlocks; //Used to keep track of where blocks are
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
@@ -29,29 +32,35 @@ public class ProblemActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_problem);
 
-        rl = (RelativeLayout) findViewById(R.id.rlayout);
+        vlayout = (LinearLayout) findViewById(R.id.vlayout);
 
-        block1 = findViewById(R.id.block1);
-        block2 = findViewById(R.id.block2);
-        block3 = findViewById(R.id.block3);
-        block4 = findViewById(R.id.block4);
-        block5 = findViewById(R.id.block5);
-        block6 = findViewById(R.id.block6);
-        block7 = findViewById(R.id.block7);
-        block8 = findViewById(R.id.block8);
+        blocks = new TextView[8];
+        slots = new ArrayList<TextView>();
 
-        block1.setOnTouchListener(new BlockTouchListener());
-        block2.setOnTouchListener(new BlockTouchListener());
-        block3.setOnTouchListener(new BlockTouchListener());
-        block4.setOnTouchListener(new BlockTouchListener());
-        block5.setOnTouchListener(new BlockTouchListener());
-        block6.setOnTouchListener(new BlockTouchListener());
-        block7.setOnTouchListener(new BlockTouchListener());
-        block8.setOnTouchListener(new BlockTouchListener());
+        //Set up blocks
+        blocks[0] = findViewById(R.id.block0);
+        blocks[0].setOnTouchListener(new BlockTouchListener());
+        blocks[1] = findViewById(R.id.block1);
+        blocks[1].setOnTouchListener(new BlockTouchListener());
+        blocks[2] = findViewById(R.id.block2);
+        blocks[2].setOnTouchListener(new BlockTouchListener());
+        blocks[3] = findViewById(R.id.block3);
+        blocks[3].setOnTouchListener(new BlockTouchListener());
+        blocks[4] = findViewById(R.id.block4);
+        blocks[4].setOnTouchListener(new BlockTouchListener());
+        blocks[5] = findViewById(R.id.block5);
+        blocks[5].setOnTouchListener(new BlockTouchListener());
+        blocks[6] = findViewById(R.id.block6);
+        blocks[6].setOnTouchListener(new BlockTouchListener());
+        blocks[7] = findViewById(R.id.block7);
+        blocks[7].setOnTouchListener(new BlockTouchListener());
+        System.out.println(String.format("Setup: Activity Blocks created."));
 
 
         problem = new Problem();
+        probBlocks = problem.getBlocks();
         printProblemLines();
+        setupBlocks();
 
     }
 
@@ -169,37 +178,55 @@ public class ProblemActivity extends AppCompatActivity {
     public void printProblemLines() {
         String[][] problemLines = problem.getProbLines();
 
-        View recentView = null;
+        for(int i =0;i<problemLines.length;i++) {
 
-        for(int i = 0; i<problemLines.length;i++) {
+            LinearLayout hlayout = new LinearLayout(this);
+            hlayout.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+            hlayout.setOrientation(LinearLayout.HORIZONTAL);
 
-            TextView tv = createTextView(problemLines[i][0]); //Create new text view
-            RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams((int) RelativeLayout.LayoutParams.WRAP_CONTENT, (int) RelativeLayout.LayoutParams.WRAP_CONTENT); //set to wrap content
-            if(recentView == null) {
-                params.addRule(RelativeLayout.ALIGN_PARENT_TOP);
-            } else {
-                params.addRule(RelativeLayout.BELOW, recentView.getId()); //position underneath last object
+            vlayout.addView(hlayout);
+
+            for(int j = 0;j<problemLines[i].length;j++) {
+                TextView text = createTextView(problemLines[i][j]);
+                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams((int) LinearLayout.LayoutParams.WRAP_CONTENT, (int) LinearLayout.LayoutParams.WRAP_CONTENT);
+                text.setLayoutParams(params);
+                text.setText(problemLines[i][j]);
+
+                hlayout.addView(text);
+                System.out.println(String.format("Setup: Added \"%s\" line.", (String) text.getText()));
             }
-            tv.setLayoutParams(params);
-            View recentListView = tv;
-            rl.addView(tv);
-
-            for(int j = 1; j<problemLines[i].length;j++) {
-
-                TextView tvl = createTextView(problemLines[i][j]); //Create new text view
-                params = new RelativeLayout.LayoutParams((int) RelativeLayout.LayoutParams.WRAP_CONTENT, (int) RelativeLayout.LayoutParams.WRAP_CONTENT); //set to wrap content
-                if(recentView == null) {
-                    params.addRule(RelativeLayout.ALIGN_PARENT_TOP);
-                } else {
-                    params.addRule(RelativeLayout.BELOW, recentView.getId()); //position underneath last object
-                }
-                params.addRule(RelativeLayout.RIGHT_OF, recentListView.getId()); //position underneath last object
-                tvl.setLayoutParams(params);
-                recentListView = tvl;
-                rl.addView(tvl);
-            }
-            recentView = tv;
         }
+        System.out.println(String.format("Setup: Problem Lines setup complete."));
+    }
+
+    public void setupBlocks() {
+
+       for(int i = 0; i < 8; i++){
+           //fill blocks with text
+           blocks[i].setVisibility(View.VISIBLE);
+           if(i >=  probBlocks.length) {
+               blocks[i].setVisibility(View.INVISIBLE);
+               System.out.println(String.format("Setup: Set Block %d to invisible.", i));
+           } else {
+               blocks[i].setText(probBlocks[i].getText());
+               probBlocks[i].setOriginal(blocks[i].getId());
+               probBlocks[i].setCurrent(blocks[i].getId());
+               probBlocks[i].setPrevious(blocks[i].getId());
+               System.out.println(String.format("Setup: Added \"%s\" block.", (String) probBlocks[i].getText()));
+           }
+       }
+        System.out.println(String.format("Setup: Activity Blocks setup complete."));
+    }
+
+    public int findProbBlock(String text) {
+        int index = -1;
+        for(int i=0; i<probBlocks.length; i++){
+            if(probBlocks[i].getText() == text) {
+                //we have found our block
+                index = i;
+            }
+        }
+        return index;
     }
 
     private final class BlockTouchListener implements View.OnTouchListener {
@@ -232,17 +259,52 @@ public class ProblemActivity extends AppCompatActivity {
                     break;
                 case DragEvent.ACTION_DROP:
                     //handle the dragged view being dropped over a drop view
-                    View view = (View) event.getLocalState();
-                    view.setVisibility(View.INVISIBLE);
-                    TextView dropTarget = (TextView) v; //gets slot
-                    TextView dropped = (TextView) view; //gets origin of block
-                    dropTarget.setText(dropped.getText());
-                    Object tag = dropTarget.getTag();
-                    if (tag != null) {
-                        int existingID = (Integer) tag;
-                        findViewById(existingID).setVisibility(View.VISIBLE);
+                    TextView view = (TextView) event.getLocalState();
+                    String text = (String) view.getText();
+
+                    int index = findProbBlock(text); //find the problem block this text matches to
+                    System.out.println("Blocks: index is " + index);
+
+                    probBlocks[index].setPrevious(probBlocks[index].getCurrent());
+                    probBlocks[index].setCurrent(v.getId()); //set current to this slots id
+
+                    TextView original = findViewById(probBlocks[index].getOriginal());
+                    original.setVisibility(View.INVISIBLE);
+
+                    TextView current = findViewById(probBlocks[index].getCurrent());
+
+                    if(current.getText() == "______") {
+                        System.out.println("Blocks: current used to be an empty slot");
+                        //do nothing
+                    } else {
+                        System.out.println("Blocks: current used to be an full slot");
+                        int iindex = findProbBlock((String) current.getText());
+                        findViewById(probBlocks[iindex].getOriginal()).setVisibility(View.VISIBLE);
+                        probBlocks[iindex].setCurrent(probBlocks[iindex].getOriginal());
+                        probBlocks[iindex].setPrevious(probBlocks[iindex].getOriginal());
                     }
-                    dropTarget.setTag(dropped.getId());
+
+                    current.setText(probBlocks[index].getText());
+                    current.setOnTouchListener(new BlockTouchListener());
+
+                    TextView previous = findViewById(probBlocks[index].getPrevious());
+                    boolean isBlock = false;
+
+                    for(int j=0;j<8;j++) {
+                        if(blocks[j].getId() == previous.getId()){
+                            isBlock = true;
+                        }
+                    }
+
+                    if(isBlock) {
+                        previous.setVisibility(View.INVISIBLE);
+                        System.out.println("Blocks: previous used to be a block");
+                    } else {
+                        previous.setText("______");
+                        previous.setOnTouchListener(null);
+                        System.out.println("Blocks: previous used to be a slot");
+                    }
+
                     break;
                 case DragEvent.ACTION_DRAG_ENDED:
                     //no action necessary
