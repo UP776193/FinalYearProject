@@ -3,6 +3,7 @@ package com.example.landscapedesign;
 import android.content.ClipData;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.DragEvent;
@@ -20,11 +21,13 @@ import java.util.ArrayList;
 
 public class ProblemActivity extends AppCompatActivity {
 
-    Problem problem;
-    LinearLayout vlayout;
-    TextView[] blocks; //Used to keep track of movable blocks in activity
-    ArrayList<TextView> slots;
-    Block[] probBlocks; //Used to keep track of where blocks are
+    private Problem problem;
+    private LinearLayout vlayout;
+    private TextView[] blocks; //Used to keep track of movable blocks in activity
+    private ArrayList<Slot> slots;
+    private Block[] probBlocks; //Used to keep track of where blocks are
+    private MediaPlayer clickSoundMP;
+    private TextView blockReturn;
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
@@ -35,7 +38,7 @@ public class ProblemActivity extends AppCompatActivity {
         vlayout = (LinearLayout) findViewById(R.id.vlayout);
 
         blocks = new TextView[8];
-        slots = new ArrayList<TextView>();
+        slots = new ArrayList<Slot>();
 
         //Set up blocks
         blocks[0] = findViewById(R.id.block0);
@@ -62,6 +65,10 @@ public class ProblemActivity extends AppCompatActivity {
         printProblemLines();
         setupBlocks();
 
+        blockReturn = findViewById(R.id.blockreturn);
+        blockReturn.setOnDragListener(new BlockReturnDragListener());
+
+        clickSoundMP = MediaPlayer.create(this, R.raw.click);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)
@@ -69,14 +76,21 @@ public class ProblemActivity extends AppCompatActivity {
         TextView tv = new TextView(this);
         tv.setId((int) System.currentTimeMillis());
         tv.setText(text);
-        tv.setPadding(20,20,20,20);
+        tv.setPadding(20,20,20,40);
         tv.setTextAppearance(R.style.problemText);
-        if(text.contains("______")){
-            tv.setText("      ");
-            tv.setBackgroundResource(R.color.colorSlots);
-            tv.setOnDragListener(new SlotDragListener());
-        }
         return tv;
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    private Slot createSlot() {
+        Slot slot = new Slot(this);
+        slot.setId((int) System.currentTimeMillis() * 2);
+        slot.setPadding(20,20,20,40);
+        slot.setTextAppearance(R.style.problemText);
+        slot.setBackgroundResource(R.color.colorSlots);
+        slot.setOnDragListener(new SlotDragListener());
+        slots.add(slot);
+        return slot;
     }
 
     public void skip(View view) {
@@ -107,7 +121,7 @@ public class ProblemActivity extends AppCompatActivity {
     public void viewProblem(View view) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("");
-        builder.setTitle("Drag the blocks into their correct position on the algorithm. Expected Output from x = 25");
+        builder.setTitle(problem.getProbDesc());
 
         builder.setNeutralButton("Dismiss", new DialogInterface.OnClickListener() {
             @Override
@@ -149,7 +163,7 @@ public class ProblemActivity extends AppCompatActivity {
 
         if (checkCorrect()) {
             builder.setTitle("CORRECT");
-            builder.setMessage("com.example.landscapedesign.Block 1 is the correct answer");
+            builder.setMessage("Well Done, that's correct!");
             builder.setNeutralButton("Next Question", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
@@ -158,7 +172,7 @@ public class ProblemActivity extends AppCompatActivity {
             });
         } else {
             builder.setTitle("INCORRECT");
-            builder.setMessage("The dragged block is incorrect");
+            builder.setMessage("There appears to be a block in the wrong place.");
             builder.setNeutralButton("Try ", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
@@ -171,7 +185,18 @@ public class ProblemActivity extends AppCompatActivity {
     }
 
     public boolean checkCorrect() {
-        return true;
+
+        String[] solution = problem.getSolution();
+
+        boolean correct = true;
+        for(int i = 0; i<slots.size(); i++){
+
+            if(slots.get(i).getText() != solution[i]) {
+                correct = false;
+            }
+
+        }
+        return correct;
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)
@@ -187,13 +212,26 @@ public class ProblemActivity extends AppCompatActivity {
             vlayout.addView(hlayout);
 
             for(int j = 0;j<problemLines[i].length;j++) {
-                TextView text = createTextView(problemLines[i][j]);
-                LinearLayout.LayoutParams params = new LinearLayout.LayoutParams((int) LinearLayout.LayoutParams.WRAP_CONTENT, (int) LinearLayout.LayoutParams.WRAP_CONTENT);
-                text.setLayoutParams(params);
-                text.setText(problemLines[i][j]);
+                String t = problemLines[i][j];
+                if(t == "______") {
+                    //Create a slot here
+                    Slot text = createSlot();
+                    LinearLayout.LayoutParams params = new LinearLayout.LayoutParams((int) LinearLayout.LayoutParams.WRAP_CONTENT, (int) LinearLayout.LayoutParams.WRAP_CONTENT);
+                    text.setLayoutParams(params);
+                    text.setText(problemLines[i][j]);
 
-                hlayout.addView(text);
-                System.out.println(String.format("Setup: Added \"%s\" line.", (String) text.getText()));
+                    hlayout.addView(text);
+                    System.out.println(String.format("Setup: Added \"%s\" line.", (String) text.getText()));
+                } else {
+                    //Create a regular text view here
+                    TextView text = createTextView(problemLines[i][j]);
+                    LinearLayout.LayoutParams params = new LinearLayout.LayoutParams((int) LinearLayout.LayoutParams.WRAP_CONTENT, (int) LinearLayout.LayoutParams.WRAP_CONTENT);
+                    text.setLayoutParams(params);
+                    text.setText(problemLines[i][j]);
+
+                    hlayout.addView(text);
+                    System.out.println(String.format("Setup: Added \"%s\" line.", (String) text.getText()));
+                }
             }
         }
         System.out.println(String.format("Setup: Problem Lines setup complete."));
@@ -242,11 +280,10 @@ public class ProblemActivity extends AppCompatActivity {
                 return false;
             }
         }
-
     }
 
     private class SlotDragListener implements View.OnDragListener {
-        public boolean onDrag(View v, DragEvent event) {
+        public boolean onDrag(View target, DragEvent event) {
             switch (event.getAction()) {
                 case DragEvent.ACTION_DRAG_STARTED:
                     //no action necessary
@@ -259,50 +296,50 @@ public class ProblemActivity extends AppCompatActivity {
                     break;
                 case DragEvent.ACTION_DROP:
                     //handle the dragged view being dropped over a drop view
-                    TextView view = (TextView) event.getLocalState();
-                    String text = (String) view.getText();
+                    TextView dropped = (TextView) event.getLocalState(); //this is the object that was dropped
+                    String text = (String) dropped.getText(); //get the text of the dropped object
 
-                    int index = findProbBlock(text); //find the problem block this text matches to
-                    System.out.println("Blocks: index is " + index);
+                    try {
+                        int blockIndex = findProbBlock(text); //find the problem block this text matches to
+                        probBlocks[blockIndex].setPrevious(probBlocks[blockIndex].getCurrent()); //set the previous location of the block to its current before updating current
+                        probBlocks[blockIndex].setCurrent(target.getId()); //set the current location of the block to current slot
 
-                    probBlocks[index].setPrevious(probBlocks[index].getCurrent());
-                    probBlocks[index].setCurrent(v.getId()); //set current to this slots id
-
-                    TextView original = findViewById(probBlocks[index].getOriginal());
-                    original.setVisibility(View.INVISIBLE);
-
-                    TextView current = findViewById(probBlocks[index].getCurrent());
-
-                    if(current.getText() == "______") {
-                        System.out.println("Blocks: current used to be an empty slot");
-                        //do nothing
-                    } else {
-                        System.out.println("Blocks: current used to be an full slot");
-                        int iindex = findProbBlock((String) current.getText());
-                        findViewById(probBlocks[iindex].getOriginal()).setVisibility(View.VISIBLE);
-                        probBlocks[iindex].setCurrent(probBlocks[iindex].getOriginal());
-                        probBlocks[iindex].setPrevious(probBlocks[iindex].getOriginal());
-                    }
-
-                    current.setText(probBlocks[index].getText());
-                    current.setOnTouchListener(new BlockTouchListener());
-
-                    TextView previous = findViewById(probBlocks[index].getPrevious());
-                    boolean isBlock = false;
-
-                    for(int j=0;j<8;j++) {
-                        if(blocks[j].getId() == previous.getId()){
-                            isBlock = true;
+                        if(((Slot) target).isEmpty()) {
+                            //set full
+                            //set text
+                        } else {
+                            TextView original = findViewById(probBlocks[blockIndex].getOriginal()); //find the original location of the targets previous block before overriding
+                            String oldtext = (String) ((Slot) target).getText(); //get the old blocks text
+                            int oldblockIndex = findProbBlock(oldtext); //get the old blocks index
+                            enableTextView((TextView) findViewById(probBlocks[oldblockIndex].getOriginal())); //resets overridden block back to enabled
+                            probBlocks[oldblockIndex].setCurrent(probBlocks[oldblockIndex].getOriginal());
+                            probBlocks[oldblockIndex].setPrevious(probBlocks[oldblockIndex].getOriginal());
                         }
-                    }
 
-                    if(isBlock) {
-                        previous.setVisibility(View.INVISIBLE);
-                        System.out.println("Blocks: previous used to be a block");
-                    } else {
-                        previous.setText("______");
-                        previous.setOnTouchListener(null);
-                        System.out.println("Blocks: previous used to be a slot");
+                        boolean isBlock = false;
+                        for(int j=0;j<8;j++) {
+                            if(blocks[j].getId() == dropped.getId()){
+                                isBlock = true;
+                            }
+                        }
+
+                        if(isBlock) {
+                            disableTextView(dropped);
+                            System.out.println("Blocks: previous used to be a block");
+                        } else {
+                            ((Slot) dropped).setEmpty();
+                            System.out.println("Blocks: previous used to be a slot");
+                        }
+
+                        ((Slot) target).setText(text); //set the slot text to the new blocks text
+                        ((Slot) target).setFull();
+                        target.setOnTouchListener(new BlockTouchListener());
+                        System.out.println("Dropped: set target text to " + text);
+
+                        clickSoundMP.start();
+
+                    } catch (ClassCastException ex) {
+                        System.out.println("CRASH: Attempted to cast a TextView to Slot. id of textview is: " + target.getId() + "\n" + ex.getMessage());
                     }
 
                     break;
@@ -316,4 +353,67 @@ public class ProblemActivity extends AppCompatActivity {
         }
     }
 
+    public void disableTextView (TextView tv) {
+        tv.setAlpha((float) 0.5);
+        tv.setOnTouchListener(null);
     }
+
+    public void enableTextView (TextView tv) {
+        tv.setAlpha((float) 1);
+        tv.setOnTouchListener(new BlockTouchListener());
+    }
+
+    private class BlockReturnDragListener implements View.OnDragListener {
+        public boolean onDrag(View target, DragEvent event) {
+            switch (event.getAction()) {
+                case DragEvent.ACTION_DRAG_STARTED:
+                    //no action necessary
+                    break;
+                case DragEvent.ACTION_DRAG_ENTERED:
+                    //no action necessary
+                    break;
+                case DragEvent.ACTION_DRAG_EXITED:
+                    //no action necessary
+                    break;
+                case DragEvent.ACTION_DROP:
+                    //handle the dragged view being dropped over a drop view
+                    TextView dropped = (TextView) event.getLocalState(); //this is the object that was dropped
+                    String text = (String) dropped.getText(); //get the text of the dropped object
+
+                    try {
+                        boolean isBlock = false;
+                        for(int i = 0; i<blocks.length; i++) {
+                            if(dropped.getId() == blocks[i].getId()) {
+                                //previous was a block, do nothing
+                                isBlock = true;
+                            }
+                        }
+
+                        if(isBlock) {
+                            //do nothing
+                        } else {
+                            ((Slot) dropped).setEmpty(); //set previous to empty
+                            int blockIndex = findProbBlock(text); //find the problem block this text matches to
+                            enableTextView((TextView) findViewById(probBlocks[blockIndex].getOriginal())); //resets overridden block back to enabled
+                            probBlocks[blockIndex].setCurrent(probBlocks[blockIndex].getOriginal());
+                            probBlocks[blockIndex].setPrevious(probBlocks[blockIndex].getOriginal());
+
+                            clickSoundMP.start();
+                        }
+
+                    } catch (ClassCastException ex) {
+                        System.out.println("CRASH: Previous slot is somehow now type slot");
+                    }
+
+                    break;
+                case DragEvent.ACTION_DRAG_ENDED:
+                    //no action necessary
+                    break;
+                default:
+                    break;
+            }
+            return true;
+        }
+    }
+
+}

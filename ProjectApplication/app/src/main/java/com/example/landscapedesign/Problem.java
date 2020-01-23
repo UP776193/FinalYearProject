@@ -42,7 +42,9 @@ public class Problem {
             blocks[i] = new Block(blockTexts[i]);
         }
 
-        this.solution = new String []{};
+        this.solution = new String []{
+                "int","++","5","x"
+        };
     }
 
     public Block[] getBlocks() {
