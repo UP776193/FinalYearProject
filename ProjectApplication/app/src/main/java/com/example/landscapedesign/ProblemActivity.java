@@ -16,7 +16,6 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
-import java.io.SyncFailedException;
 import java.util.ArrayList;
 
 public class ProblemActivity extends AppCompatActivity {
@@ -84,10 +83,6 @@ public class ProblemActivity extends AppCompatActivity {
     @RequiresApi(api = Build.VERSION_CODES.M)
     private Slot createSlot() {
         Slot slot = new Slot(this);
-        slot.setId((int) System.currentTimeMillis() * 2);
-        slot.setPadding(20,20,20,40);
-        slot.setTextAppearance(R.style.problemText);
-        slot.setBackgroundResource(R.color.colorSlots);
         slot.setOnDragListener(new SlotDragListener());
         slots.add(slot);
         return slot;
@@ -308,7 +303,6 @@ public class ProblemActivity extends AppCompatActivity {
                             //set full
                             //set text
                         } else {
-                            TextView original = findViewById(probBlocks[blockIndex].getOriginal()); //find the original location of the targets previous block before overriding
                             String oldtext = (String) ((Slot) target).getText(); //get the old blocks text
                             int oldblockIndex = findProbBlock(oldtext); //get the old blocks index
                             enableTextView((TextView) findViewById(probBlocks[oldblockIndex].getOriginal())); //resets overridden block back to enabled
@@ -331,8 +325,7 @@ public class ProblemActivity extends AppCompatActivity {
                             System.out.println("Blocks: previous used to be a slot");
                         }
 
-                        ((Slot) target).setText(text); //set the slot text to the new blocks text
-                        ((Slot) target).setFull();
+                        ((Slot) target).setFull(text); //set the slot text to the new blocks text
                         target.setOnTouchListener(new BlockTouchListener());
                         System.out.println("Dropped: set target text to " + text);
 
