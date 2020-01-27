@@ -1,0 +1,11 @@
+Drag Blocks into their correct position on the algorithm. Expected output from x = 25
+int,++,5,x
+x,5,--,int,String,1,++,Boolean
+7
+public int addTo25() {
+  ,*slot*,x = 0;
+   for (int i = 0;i<5;i,*slot*,) {
+         x += ,*slot*,;
+           }
+  return,*slot*,;
+}

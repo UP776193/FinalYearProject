@@ -10,12 +10,14 @@ public class Problem {
     private String[][] probLines;
     private String[] solution;
 
-    public Problem(int problemID, String probDesc, String[][] probLines, String[] solution) {
+    public Problem(int problemID, String probDesc, String[][] probLines, String[] solution, String[] blocks) {
         this.problemID = problemID;
         this.probDesc = probDesc;
         this.probLines = probLines;
         this.solution = solution;
-        this.blocks = new Block[8];
+        for(int i=0;i<8;i++) {
+            this.blocks[i] = new Block(blocks[i]);
+        }
     }
 
     public Problem() {
@@ -27,11 +29,11 @@ public class Problem {
         this.probDesc = "Drag Blocks into their correct position on the algorithm. Expected output from x = 25";
         this.probLines = new String[][]{
                 {"public int addTo25() {"},
-                {"  ","______","x = 0;"},
-                {"  for (int i = 0;i<5;i","______",") {"},
-                {"      x += ","______",";"},
+                {"  ","*slot*","x = 0;"},
+                {"  for (int i = 0;i<5;i","*slot*",") {"},
+                {"      x += ","*slot*",";"},
                 {"  }"},
-                {"  return","______",";"},
+                {"  return","*slot*",";"},
                 {"}"}
         };
         String[] blockTexts = new String[] {

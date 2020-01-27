@@ -17,7 +17,7 @@ public class Slot extends android.widget.TextView {
     public Slot (Context context) {
         super(context);
         this.isEmpty = true;
-        this.currentText = "______";
+        this.currentText = getResources().getString(R.string.slotcode);
         this.setId((int) System.currentTimeMillis() * 2);
         this.setDefaultPadding();
         this.setTextAppearance(R.style.problemText);
@@ -63,7 +63,7 @@ public class Slot extends android.widget.TextView {
     }
 
     public void resetCurrentText() {
-        this.currentText = "______";
+        this.currentText = getResources().getString(R.string.slotcode);
     }
 
 

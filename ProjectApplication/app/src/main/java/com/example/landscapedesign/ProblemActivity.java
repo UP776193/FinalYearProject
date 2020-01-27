@@ -18,6 +18,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import java.util.ArrayList;
 
+import static com.example.landscapedesign.HomepageActivity.pl;
+
 public class ProblemActivity extends AppCompatActivity {
 
     private Problem problem;
@@ -29,7 +31,6 @@ public class ProblemActivity extends AppCompatActivity {
     private TextView blockReturn;
 
     @RequiresApi(api = Build.VERSION_CODES.M)
-    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_problem);
@@ -58,8 +59,7 @@ public class ProblemActivity extends AppCompatActivity {
         blocks[7].setOnTouchListener(new BlockTouchListener());
         System.out.println(String.format("Setup: Activity Blocks created."));
 
-
-        problem = new Problem();
+        problem = pl.get(0);
         probBlocks = problem.getBlocks();
         printProblemLines();
         setupBlocks();
@@ -208,7 +208,8 @@ public class ProblemActivity extends AppCompatActivity {
 
             for(int j = 0;j<problemLines[i].length;j++) {
                 String t = problemLines[i][j];
-                if(t == "______") {
+                String slotcode = getResources().getString(R.string.slotcode);
+                if(t == slotcode) {
                     //Create a slot here
                     Slot text = createSlot();
                     LinearLayout.LayoutParams params = new LinearLayout.LayoutParams((int) LinearLayout.LayoutParams.WRAP_CONTENT, (int) LinearLayout.LayoutParams.WRAP_CONTENT);

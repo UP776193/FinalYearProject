@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Project Application</string>
+    <string name="slotcode">*slot*</string>
 </resources>
