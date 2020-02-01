@@ -1,4 +1,4 @@
-Drag Blocks into their correct position on the algorithm. Expected output from x = 25
+Drag Blocks into their correct position on the algorithm. Expected output from x = 25.
 int,++,5,x
 x,5,--,int,String,1,++,Boolean
 7
@@ -8,4 +8,15 @@ public int addTo25() {
          x += ,*slot*,;
            }
   return,*slot*,;
+}
+isEven should return true if number is even, or false if it is odd.
+2,true,false
+2,true,false
+7
+public boolean isEven(int number) {
+    if(number %,*slot*,== 0) {
+        return ,*slot*,;
+    } else {
+        return ,*slot*,;
+    }
 }

@@ -29,31 +29,38 @@ public class problemReader {
             AssetManager assetManager = context.getAssets();
             DataInputStream textFileStream = new DataInputStream(assetManager.open("text.txt"));
             Scanner scanner = new Scanner(textFileStream);
+            Problem problem;
+            while(scanner.hasNextLine()) {
+                //read problem description
+                String problemDesc = scanner.nextLine();
 
-            //read problem description
-            String problemDesc = scanner.nextLine();
+                //read solution
+                String[] solution = scanner.nextLine().split(",");
 
-            //read solution
-            String[] solution = scanner.nextLine().split(",");
+                //read blocks
+                String[] blocks = scanner.nextLine().split(",");
 
-            //read blocks
-            String[] blocks = scanner.nextLine().split(",");
+                //read number of lines
+                int numLines = Integer.parseInt(scanner.nextLine());
 
-            //read number of lines
-            int numLines = Integer.parseInt(scanner.nextLine());
+                String[][] problemLines = new String[numLines][];
+                //read problem lines
+                for(int i = 0; i < numLines; i++){
+                    problemLines[i] = scanner.nextLine().split(",");
+                }
 
-            String[][] problemLines = new String[numLines][];
-            //read problem lines
-            for(int i = 0; i < numLines; i++){
-                problemLines[i] = scanner.nextLine().split(",");
+                problem = new Problem(problemList.size(), problemDesc, problemLines, solution, blocks);
+                problemList.add(problem);
+                System.out.println("Setup: Added problem " + (problemList.size() - 1));
             }
-
-            Problem problem = new Problem(problemList.size(), problemDesc, problemLines, solution, blocks);
-            problemList.add(problem);
-
         } catch (IOException ex) {
+            System.out.println("CRASH: System failed to read text input.");
             return;
+        } catch (Exception ex) {
+            System.out.println("CRASH: " + ex.getMessage());
+            ex.printStackTrace();
         }
+        System.out.println("Setup: number of problems" + problemList.size());
 
     }
 

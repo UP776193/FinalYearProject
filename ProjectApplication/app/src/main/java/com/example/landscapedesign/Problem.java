@@ -5,7 +5,7 @@ import java.util.ArrayList;
 public class Problem {
 
     private int problemID;
-    private Block[] blocks = new Block[8];
+    private Block[] blocks;
     private String probDesc;
     private String[][] probLines;
     private String[] solution;
@@ -15,7 +15,8 @@ public class Problem {
         this.probDesc = probDesc;
         this.probLines = probLines;
         this.solution = solution;
-        for(int i=0;i<8;i++) {
+        this.blocks = new Block[blocks.length];
+        for(int i=0;i<blocks.length;i++) {
             this.blocks[i] = new Block(blocks[i]);
         }
     }

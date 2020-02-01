@@ -26,6 +26,7 @@ public class HomepageActivity extends AppCompatActivity {
 
     public void startGame(View view){
         Intent intent = new Intent(this, ProblemActivity.class);
+        intent.putExtra("problemID",0);
         startActivity(intent);
     }
 

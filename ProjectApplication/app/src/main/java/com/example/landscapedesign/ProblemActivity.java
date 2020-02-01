@@ -29,14 +29,16 @@ public class ProblemActivity extends AppCompatActivity {
     private Block[] probBlocks; //Used to keep track of where blocks are
     private MediaPlayer clickSoundMP;
     private TextView blockReturn;
+    private int problemIndex;
+    private Intent intent;
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_problem);
 
+        intent = getIntent();
         vlayout = (LinearLayout) findViewById(R.id.vlayout);
-
         blocks = new TextView[8];
         slots = new ArrayList<Slot>();
 
@@ -59,7 +61,9 @@ public class ProblemActivity extends AppCompatActivity {
         blocks[7].setOnTouchListener(new BlockTouchListener());
         System.out.println(String.format("Setup: Activity Blocks created."));
 
-        problem = pl.get(0);
+        problemIndex = intent.getIntExtra("problemID",-1);
+        System.out.println("Setup: Loading problem " + problemIndex);
+        problem = pl.get(problemIndex);
         probBlocks = problem.getBlocks();
         printProblemLines();
         setupBlocks();
@@ -155,13 +159,14 @@ public class ProblemActivity extends AppCompatActivity {
 
     public void submit(View view) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-
         if (checkCorrect()) {
             builder.setTitle("CORRECT");
             builder.setMessage("Well Done, that's correct!");
             builder.setNeutralButton("Next Question", new DialogInterface.OnClickListener() {
+                @RequiresApi(api = Build.VERSION_CODES.M)
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
+                    nextProblem();
                     dialog.dismiss();
                 }
             });
@@ -180,18 +185,27 @@ public class ProblemActivity extends AppCompatActivity {
     }
 
     public boolean checkCorrect() {
-
         String[] solution = problem.getSolution();
-
         boolean correct = true;
         for(int i = 0; i<slots.size(); i++){
-
-            if(slots.get(i).getText() != solution[i]) {
+            if(!slots.get(i).getText().equals(solution[i])) {
                 correct = false;
             }
-
         }
         return correct;
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    public void nextProblem() {
+        intent = new Intent(this, ProblemActivity.class);
+        if(problemIndex + 1 == pl.size()) {
+            problemIndex = 0;
+        } else {
+            problemIndex++;
+        }
+        intent.putExtra("problemID", problemIndex);
+        startActivity(intent);
+        finish();
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)
@@ -199,23 +213,17 @@ public class ProblemActivity extends AppCompatActivity {
         String[][] problemLines = problem.getProbLines();
 
         for(int i =0;i<problemLines.length;i++) {
-
             LinearLayout hlayout = new LinearLayout(this);
             hlayout.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
             hlayout.setOrientation(LinearLayout.HORIZONTAL);
-
             vlayout.addView(hlayout);
 
             for(int j = 0;j<problemLines[i].length;j++) {
-                String t = problemLines[i][j];
-                String slotcode = getResources().getString(R.string.slotcode);
-                if(t == slotcode) {
+                if(problemLines[i][j].equals(getResources().getString(R.string.slotcode))) {
                     //Create a slot here
                     Slot text = createSlot();
                     LinearLayout.LayoutParams params = new LinearLayout.LayoutParams((int) LinearLayout.LayoutParams.WRAP_CONTENT, (int) LinearLayout.LayoutParams.WRAP_CONTENT);
                     text.setLayoutParams(params);
-                    text.setText(problemLines[i][j]);
-
                     hlayout.addView(text);
                     System.out.println(String.format("Setup: Added \"%s\" line.", (String) text.getText()));
                 } else {
@@ -224,7 +232,6 @@ public class ProblemActivity extends AppCompatActivity {
                     LinearLayout.LayoutParams params = new LinearLayout.LayoutParams((int) LinearLayout.LayoutParams.WRAP_CONTENT, (int) LinearLayout.LayoutParams.WRAP_CONTENT);
                     text.setLayoutParams(params);
                     text.setText(problemLines[i][j]);
-
                     hlayout.addView(text);
                     System.out.println(String.format("Setup: Added \"%s\" line.", (String) text.getText()));
                 }
@@ -235,20 +242,27 @@ public class ProblemActivity extends AppCompatActivity {
 
     public void setupBlocks() {
 
-       for(int i = 0; i < 8; i++){
-           //fill blocks with text
-           blocks[i].setVisibility(View.VISIBLE);
-           if(i >=  probBlocks.length) {
-               blocks[i].setVisibility(View.INVISIBLE);
-               System.out.println(String.format("Setup: Set Block %d to invisible.", i));
-           } else {
-               blocks[i].setText(probBlocks[i].getText());
-               probBlocks[i].setOriginal(blocks[i].getId());
-               probBlocks[i].setCurrent(blocks[i].getId());
-               probBlocks[i].setPrevious(blocks[i].getId());
-               System.out.println(String.format("Setup: Added \"%s\" block.", (String) probBlocks[i].getText()));
-           }
-       }
+        for (TextView _block : blocks) {
+            //Make every block visible
+           _block.setVisibility(View.VISIBLE);
+        }
+
+        //number of required blocks
+        int numBlocks = probBlocks.length;
+
+        for(int i=0; i<numBlocks;i++) {
+            //setup blocks
+            blocks[i].setText(probBlocks[i].getText());
+            probBlocks[i].setOriginal(blocks[i].getId());
+            probBlocks[i].setCurrent(blocks[i].getId());
+            probBlocks[i].setPrevious(blocks[i].getId());
+            System.out.println(String.format("Setup: Added \"%s\" block.", (String) probBlocks[i].getText()));
+        }
+
+        for(int j=7; j>= numBlocks; j--) {
+            //set unused to invisible
+            blocks[j].setVisibility(View.INVISIBLE);
+        }
         System.out.println(String.format("Setup: Activity Blocks setup complete."));
     }
 
