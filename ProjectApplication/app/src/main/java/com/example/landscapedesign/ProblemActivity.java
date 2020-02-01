@@ -38,9 +38,9 @@ public class ProblemActivity extends AppCompatActivity {
         setContentView(R.layout.activity_problem);
 
         intent = getIntent();
-        vlayout = (LinearLayout) findViewById(R.id.vlayout);
+        vlayout = findViewById(R.id.vlayout);
         blocks = new TextView[8];
-        slots = new ArrayList<Slot>();
+        slots = new ArrayList<>();
 
         //Set up blocks
         blocks[0] = findViewById(R.id.block0);
