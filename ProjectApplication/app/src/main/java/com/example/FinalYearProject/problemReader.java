@@ -1,9 +1,7 @@
-package com.example.landscapedesign;
+package com.example.FinalYearProject;
 
 import android.content.Context;
 import android.content.res.AssetManager;
-
-import com.example.landscapedesign.Problem;
 
 import java.io.DataInputStream;
 import java.io.IOException;
@@ -27,7 +25,7 @@ public class problemReader {
     public void loadAssets() {
         try {
             AssetManager assetManager = context.getAssets();
-            DataInputStream textFileStream = new DataInputStream(assetManager.open("text.txt"));
+            DataInputStream textFileStream = new DataInputStream(assetManager.open("problems.txt"));
             Scanner scanner = new Scanner(textFileStream);
             Problem problem;
             while(scanner.hasNextLine()) {
@@ -63,7 +61,4 @@ public class problemReader {
         System.out.println("Setup: number of problems" + problemList.size());
 
     }
-
-
-
 }

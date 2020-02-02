@@ -1,4 +1,4 @@
-package com.example.landscapedesign;
+package com.example.FinalYearProject;
 
 import android.content.ClipData;
 import android.content.DialogInterface;
@@ -17,9 +17,11 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import java.util.ArrayList;
+import java.util.Random;
 
-import static com.example.landscapedesign.HomepageActivity.pl;
+import static com.example.FinalYearProject.HomepageActivity.pl;
 
+@RequiresApi(api = Build.VERSION_CODES.M)
 public class ProblemActivity extends AppCompatActivity {
 
     private Problem problem;
@@ -32,7 +34,6 @@ public class ProblemActivity extends AppCompatActivity {
     private int problemIndex;
     private Intent intent;
 
-    @RequiresApi(api = Build.VERSION_CODES.M)
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_problem);
@@ -74,141 +75,33 @@ public class ProblemActivity extends AppCompatActivity {
         clickSoundMP = MediaPlayer.create(this, R.raw.click);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.M)
-    private TextView createTextView(String text) {
-        TextView tv = new TextView(this);
-        tv.setId((int) System.currentTimeMillis());
-        tv.setText(text);
-        tv.setPadding(20,20,20,40);
-        tv.setTextAppearance(R.style.problemText);
-        return tv;
-    }
+    //SETUP FUNCTIONS
 
-    @RequiresApi(api = Build.VERSION_CODES.M)
-    private Slot createSlot() {
-        Slot slot = new Slot(this);
-        slot.setOnDragListener(new SlotDragListener());
-        slots.add(slot);
-        return slot;
-    }
-
-    public void skip(View view) {
-        //found @https://stackoverflow.com/questions/2478517/how-to-display-a-yes-no-dialog-box-on-android
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-
-        builder.setTitle("Skip?");
-        builder.setMessage("Are you sure you want to skip this question?");
-
-        builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int which) {
-                // Do nothing but close the dialog
-                dialog.dismiss();
-            }
-        });
-
-        builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-
-                dialog.dismiss();
-            }
-        });
-        AlertDialog alert = builder.create();
-        alert.show();
-    }
-
-    public void viewProblem(View view) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("");
-        builder.setTitle(problem.getProbDesc());
-
-        builder.setNeutralButton("Dismiss", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-            }
-        });
-        AlertDialog alert = builder.create();
-        alert.show();
-    }
-
-    public void back(View view) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-
-        builder.setTitle("Go Back");
-        builder.setMessage("Are you sure you want to return to the homepage? All unsaved progress will be lost.");
-
-        builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int which) {
-                //Return to the Homepage
-                Intent intent = new Intent(getBaseContext(), HomepageActivity.class);
-                startActivity(intent);
-            }
-        });
-
-        builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                // Do nothing but close the dialog
-                dialog.dismiss();
-            }
-        });
-        AlertDialog alert = builder.create();
-        alert.show();
-    }
-
-    public void submit(View view) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        if (checkCorrect()) {
-            builder.setTitle("CORRECT");
-            builder.setMessage("Well Done, that's correct!");
-            builder.setNeutralButton("Next Question", new DialogInterface.OnClickListener() {
-                @RequiresApi(api = Build.VERSION_CODES.M)
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    nextProblem();
-                    dialog.dismiss();
-                }
-            });
-        } else {
-            builder.setTitle("INCORRECT");
-            builder.setMessage("There appears to be a block in the wrong place.");
-            builder.setNeutralButton("Try ", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    dialog.dismiss();
-                }
-            });
+    public void setupBlocks() {
+        for (TextView _block : blocks) {
+            //Make every block visible
+            _block.setVisibility(View.VISIBLE);
         }
-        AlertDialog alert = builder.create();
-        alert.show();
-    }
 
-    public boolean checkCorrect() {
-        String[] solution = problem.getSolution();
-        boolean correct = true;
-        for(int i = 0; i<slots.size(); i++){
-            if(!slots.get(i).getText().equals(solution[i])) {
-                correct = false;
-            }
+        //number of required blocks
+        int numBlocks = probBlocks.length;
+
+        for(int i=0; i<numBlocks;i++) {
+            //setup blocks
+            blocks[i].setText(probBlocks[i].getText());
+            probBlocks[i].setOriginal(blocks[i].getId());
+            probBlocks[i].setCurrent(blocks[i].getId());
+            probBlocks[i].setPrevious(blocks[i].getId());
+            System.out.println(String.format("Setup: Added \"%s\" block.", (String) probBlocks[i].getText()));
         }
-        return correct;
-    }
 
-    @RequiresApi(api = Build.VERSION_CODES.M)
-    public void nextProblem() {
-        intent = new Intent(this, ProblemActivity.class);
-        if(problemIndex + 1 == pl.size()) {
-            problemIndex = 0;
-        } else {
-            problemIndex++;
+        for(int j=7; j>= numBlocks; j--) {
+            //set unused to invisible
+            blocks[j].setVisibility(View.INVISIBLE);
         }
-        intent.putExtra("problemID", problemIndex);
-        startActivity(intent);
-        finish();
+        System.out.println(String.format("Setup: Activity Blocks setup complete."));
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.M)
     public void printProblemLines() {
         String[][] problemLines = problem.getProbLines();
 
@@ -240,42 +133,210 @@ public class ProblemActivity extends AppCompatActivity {
         System.out.println(String.format("Setup: Problem Lines setup complete."));
     }
 
-    public void setupBlocks() {
-
-        for (TextView _block : blocks) {
-            //Make every block visible
-           _block.setVisibility(View.VISIBLE);
-        }
-
-        //number of required blocks
-        int numBlocks = probBlocks.length;
-
-        for(int i=0; i<numBlocks;i++) {
-            //setup blocks
-            blocks[i].setText(probBlocks[i].getText());
-            probBlocks[i].setOriginal(blocks[i].getId());
-            probBlocks[i].setCurrent(blocks[i].getId());
-            probBlocks[i].setPrevious(blocks[i].getId());
-            System.out.println(String.format("Setup: Added \"%s\" block.", (String) probBlocks[i].getText()));
-        }
-
-        for(int j=7; j>= numBlocks; j--) {
-            //set unused to invisible
-            blocks[j].setVisibility(View.INVISIBLE);
-        }
-        System.out.println(String.format("Setup: Activity Blocks setup complete."));
+    private TextView createTextView(String text) {
+        TextView tv = new TextView(this);
+        tv.setId((int) System.currentTimeMillis());
+        tv.setText(text);
+        tv.setPadding(20,40,20,40);
+        tv.setTextAppearance(R.style.problemText);
+        return tv;
     }
+
+    private Slot createSlot() {
+        Slot slot = new Slot(this);
+        slot.setOnDragListener(new SlotDragListener());
+        slots.add(slot);
+        return slot;
+    }
+
+    //SKIP FUNCTIONS
+
+    public void skip(View view) {
+        //found @https://stackoverflow.com/questions/2478517/how-to-display-a-yes-no-dialog-box-on-android
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+        builder.setTitle("Skip?");
+        builder.setMessage("Are you sure you want to skip this question?");
+
+        builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.M)
+            public void onClick(DialogInterface dialog, int which) {
+                // Do nothing but close the dialog
+                nextProblem();
+                dialog.dismiss();
+            }
+        });
+
+        builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+                dialog.dismiss();
+            }
+        });
+        AlertDialog alert = builder.create();
+        alert.show();
+    }
+
+    //VIEW PROBLEM FUNCTIONS
+
+    public void viewProblem(View view) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("");
+        builder.setTitle(problem.getProbDesc());
+
+        builder.setNeutralButton("Dismiss", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        AlertDialog alert = builder.create();
+        alert.show();
+    }
+
+    //BACK FUNCTIONS
+
+    public void back(View view) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+        builder.setTitle("Go Back");
+        builder.setMessage("Are you sure you want to return to the homepage? All unsaved progress will be lost.");
+
+        builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                //Return to the Homepage
+                Intent intent = new Intent(getBaseContext(), HomepageActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // Do nothing but close the dialog
+                dialog.dismiss();
+            }
+        });
+        AlertDialog alert = builder.create();
+        alert.show();
+    }
+
+    //SUBMIT FUNCTIONS
+
+    public void submit(View view) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        if (checkCorrect()) {
+            builder.setTitle("CORRECT");
+            builder.setMessage("Well Done, that's correct!");
+            builder.setNeutralButton("Next Question", new DialogInterface.OnClickListener() {
+                @RequiresApi(api = Build.VERSION_CODES.M)
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    nextProblem();
+                    dialog.dismiss();
+                }
+            });
+        } else {
+            builder.setTitle("INCORRECT");
+            builder.setMessage("There appears to be a block in the wrong place.");
+            builder.setNeutralButton("Try Again", new DialogInterface.OnClickListener() {
+                @RequiresApi(api = Build.VERSION_CODES.M)
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    giveHint();
+                    dialog.dismiss();
+                }
+            });
+        }
+        AlertDialog alert = builder.create();
+        alert.show();
+    }
+
+    public boolean checkCorrect() {
+        String[] solution = problem.getSolution();
+        boolean correct = true;
+        for(int i = 0; i<slots.size(); i++){
+            if(!slots.get(i).getText().equals(solution[i])) {
+                correct = false;
+            }
+        }
+        return correct;
+    }
+
+    public void nextProblem() {
+        intent = new Intent(this, ProblemActivity.class);
+        if(problemIndex + 1 == pl.size()) {
+            problemIndex = 0;
+        } else {
+            problemIndex++;
+        }
+        intent.putExtra("problemID", problemIndex);
+        startActivity(intent);
+        finish();
+    }
+
+    private void giveHint() {
+        //take a random slot
+        int slotID = (new Random()).nextInt(slots.size());
+        Slot slot = slots.get(slotID);
+
+        if(!slot.isEmpty()) {
+            //reset original block
+            String currentText = slot.getCurrentText();
+            resetBlock(currentText);
+        } else {
+            //do nothing to the slot
+        }
+        String[] solution = problem.getSolution();
+        String correctAnswer = solution[slotID];
+        System.out.println("Hint: correct answer = " + correctAnswer);
+        int blockID = findProbBlock(correctAnswer);
+        disableBlock(blocks[blockID]);
+        slot.setCorrect();
+        slot.setCurrentText(solution[slotID]);
+
+        for(Slot _slot : slots) {
+            if(_slot.getText().equals(slot.getCurrentText()) && _slot != slot) {
+                _slot.resetCurrentText();
+                _slot.setOnTouchListener(null);
+                _slot.setEmpty();
+            }
+        }
+    }
+
+    //MISC FUNCTIONS
 
     public int findProbBlock(String text) {
         int index = -1;
         for(int i=0; i<probBlocks.length; i++){
-            if(probBlocks[i].getText() == text) {
+            if(probBlocks[i].getText().equals(text)) {
                 //we have found our block
                 index = i;
             }
         }
         return index;
     }
+
+    public void disableBlock(TextView tv) {
+        tv.setAlpha((float) 0.5);
+        tv.setOnTouchListener(null);
+    }
+
+    public void enableBlock(TextView tv) {
+        tv.setAlpha((float) 1);
+        tv.setOnTouchListener(new BlockTouchListener());
+    }
+
+    private void resetBlock(String blocktext) {
+        int oldblockIndex = findProbBlock(blocktext); //get the old blocks index
+        enableBlock((TextView) findViewById(probBlocks[oldblockIndex].getOriginal())); //resets overridden block back to enabled
+        probBlocks[oldblockIndex].setCurrent(probBlocks[oldblockIndex].getOriginal());
+        probBlocks[oldblockIndex].setPrevious(probBlocks[oldblockIndex].getOriginal());
+
+    }
+
+    //LISTENER FUNCTIONS
 
     private final class BlockTouchListener implements View.OnTouchListener {
 
@@ -308,7 +369,6 @@ public class ProblemActivity extends AppCompatActivity {
                     //handle the dragged view being dropped over a drop view
                     TextView dropped = (TextView) event.getLocalState(); //this is the object that was dropped
                     String text = (String) dropped.getText(); //get the text of the dropped object
-
                     try {
                         int blockIndex = findProbBlock(text); //find the problem block this text matches to
                         probBlocks[blockIndex].setPrevious(probBlocks[blockIndex].getCurrent()); //set the previous location of the block to its current before updating current
@@ -319,10 +379,7 @@ public class ProblemActivity extends AppCompatActivity {
                             //set text
                         } else {
                             String oldtext = (String) ((Slot) target).getText(); //get the old blocks text
-                            int oldblockIndex = findProbBlock(oldtext); //get the old blocks index
-                            enableTextView((TextView) findViewById(probBlocks[oldblockIndex].getOriginal())); //resets overridden block back to enabled
-                            probBlocks[oldblockIndex].setCurrent(probBlocks[oldblockIndex].getOriginal());
-                            probBlocks[oldblockIndex].setPrevious(probBlocks[oldblockIndex].getOriginal());
+                            resetBlock(oldtext);
                         }
 
                         boolean isBlock = false;
@@ -333,7 +390,7 @@ public class ProblemActivity extends AppCompatActivity {
                         }
 
                         if(isBlock) {
-                            disableTextView(dropped);
+                            disableBlock(dropped);
                             System.out.println("Blocks: previous used to be a block");
                         } else {
                             ((Slot) dropped).setEmpty();
@@ -359,16 +416,6 @@ public class ProblemActivity extends AppCompatActivity {
             }
             return true;
         }
-    }
-
-    public void disableTextView (TextView tv) {
-        tv.setAlpha((float) 0.5);
-        tv.setOnTouchListener(null);
-    }
-
-    public void enableTextView (TextView tv) {
-        tv.setAlpha((float) 1);
-        tv.setOnTouchListener(new BlockTouchListener());
     }
 
     private class BlockReturnDragListener implements View.OnDragListener {
@@ -402,7 +449,7 @@ public class ProblemActivity extends AppCompatActivity {
                         } else {
                             ((Slot) dropped).setEmpty(); //set previous to empty
                             int blockIndex = findProbBlock(text); //find the problem block this text matches to
-                            enableTextView((TextView) findViewById(probBlocks[blockIndex].getOriginal())); //resets overridden block back to enabled
+                            enableBlock((TextView) findViewById(probBlocks[blockIndex].getOriginal())); //resets overridden block back to enabled
                             probBlocks[blockIndex].setCurrent(probBlocks[blockIndex].getOriginal());
                             probBlocks[blockIndex].setPrevious(probBlocks[blockIndex].getOriginal());
 
@@ -423,5 +470,4 @@ public class ProblemActivity extends AppCompatActivity {
             return true;
         }
     }
-
 }

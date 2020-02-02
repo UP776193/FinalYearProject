@@ -7,4 +7,5 @@
     <color name="colorSlots">#4a84b4</color>
     <color name="layoutBackground">#282C34</color>
     <color name="colorText">#FFFFFF</color>
+    <color name="correctText">#33cc33</color>
 </resources>

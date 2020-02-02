@@ -1,14 +1,11 @@
-package com.example.landscapedesign;
+package com.example.FinalYearProject;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.TextView;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 
 public class HomepageActivity extends AppCompatActivity {

@@ -1,9 +1,8 @@
-package com.example.landscapedesign;
+package com.example.FinalYearProject;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Build;
-import android.widget.TextView;
 
 import androidx.annotation.RequiresApi;
 
@@ -65,6 +64,15 @@ public class Slot extends android.widget.TextView {
     public void resetCurrentText() {
         this.currentText = "______";
         this.setText(this.currentText);
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    public void setCorrect() {
+        this.setBackgroundResource(android.R.color.transparent);
+        this.setDefaultPadding();
+        this.setTextAppearance(R.style.correctText);
+        this.setOnTouchListener(null);
+        this.setOnDragListener(null);
     }
 
 
