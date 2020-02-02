@@ -290,9 +290,15 @@ public class ProblemActivity extends AppCompatActivity {
         }
         String[] solution = problem.getSolution();
         String correctAnswer = solution[slotID];
-        System.out.println("Hint: correct answer = " + correctAnswer);
-        int blockID = findProbBlock(correctAnswer);
-        disableBlock(blocks[blockID]);
+
+        int blockID;
+        try {
+            blockID = findProbBlock(correctAnswer);
+            disableBlock(blocks[blockID]);
+        } catch(MissingBlockException ex) {
+            ex.printStackTrace();
+        }
+
         slot.setCorrect();
         slot.setCurrentText(solution[slotID]);
 
@@ -307,7 +313,7 @@ public class ProblemActivity extends AppCompatActivity {
 
     //MISC FUNCTIONS
 
-    public int findProbBlock(String text) {
+    public int findProbBlock(String text) throws MissingBlockException{
         int index = -1;
         for(int i=0; i<probBlocks.length; i++){
             if(probBlocks[i].getText().equals(text)) {
@@ -329,11 +335,16 @@ public class ProblemActivity extends AppCompatActivity {
     }
 
     private void resetBlock(String blocktext) {
-        int oldblockIndex = findProbBlock(blocktext); //get the old blocks index
-        enableBlock((TextView) findViewById(probBlocks[oldblockIndex].getOriginal())); //resets overridden block back to enabled
-        probBlocks[oldblockIndex].setCurrent(probBlocks[oldblockIndex].getOriginal());
-        probBlocks[oldblockIndex].setPrevious(probBlocks[oldblockIndex].getOriginal());
+        try {
+            int oldblockIndex = findProbBlock(blocktext); //get the old blocks index
+            enableBlock((TextView) findViewById(probBlocks[oldblockIndex].getOriginal())); //resets overridden block back to enabled
+            probBlocks[oldblockIndex].setCurrent(probBlocks[oldblockIndex].getOriginal());
+            probBlocks[oldblockIndex].setPrevious(probBlocks[oldblockIndex].getOriginal());
 
+        } catch (MissingBlockException ex) {
+            ex.printStackTrace();
+            System.out.println("CRASH: Unable to reset block.");
+        }
     }
 
     //LISTENER FUNCTIONS
@@ -404,9 +415,11 @@ public class ProblemActivity extends AppCompatActivity {
                         clickSoundMP.start();
 
                     } catch (ClassCastException ex) {
+                        ex.printStackTrace();
                         System.out.println("CRASH: Attempted to cast a TextView to Slot. id of textview is: " + target.getId() + "\n" + ex.getMessage());
+                    } catch (MissingBlockException ex) {
+                        ex.printStackTrace();
                     }
-
                     break;
                 case DragEvent.ACTION_DRAG_ENDED:
                     //no action necessary
@@ -448,11 +461,7 @@ public class ProblemActivity extends AppCompatActivity {
                             //do nothing
                         } else {
                             ((Slot) dropped).setEmpty(); //set previous to empty
-                            int blockIndex = findProbBlock(text); //find the problem block this text matches to
-                            enableBlock((TextView) findViewById(probBlocks[blockIndex].getOriginal())); //resets overridden block back to enabled
-                            probBlocks[blockIndex].setCurrent(probBlocks[blockIndex].getOriginal());
-                            probBlocks[blockIndex].setPrevious(probBlocks[blockIndex].getOriginal());
-
+                            resetBlock(text);
                             clickSoundMP.start();
                         }
 
