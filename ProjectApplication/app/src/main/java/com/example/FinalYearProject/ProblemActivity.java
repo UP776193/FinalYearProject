@@ -25,25 +25,36 @@ import static com.example.FinalYearProject.HomepageActivity.pl;
 public class ProblemActivity extends AppCompatActivity {
 
     private Problem problem;
-    private LinearLayout vlayout;
     private TextView[] blocks; //Used to keep track of movable blocks in activity
     private ArrayList<Slot> slots;
     private Block[] probBlocks; //Used to keep track of where blocks are
     private MediaPlayer clickSoundMP;
-    private TextView blockReturn;
     private int problemIndex;
-    private Intent intent;
+    private boolean hintGiven;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_problem);
 
-        intent = getIntent();
-        vlayout = findViewById(R.id.vlayout);
         blocks = new TextView[8];
         slots = new ArrayList<>();
 
-        //Set up blocks
+        hintGiven = false;
+
+        problemIndex = getIntent().getIntExtra("problemID",-1);
+        problem = pl.get(problemIndex);
+        probBlocks = problem.getBlocks();
+        printProblemLines();
+        setupBlocks();
+
+        findViewById(R.id.blockreturn).setOnDragListener(new BlockReturnDragListener());
+
+        clickSoundMP = MediaPlayer.create(this, R.raw.click);
+    }
+
+    //SETUP FUNCTIONS
+
+    public void setupBlocks() {
         blocks[0] = findViewById(R.id.block0);
         blocks[0].setOnTouchListener(new BlockTouchListener());
         blocks[1] = findViewById(R.id.block1);
@@ -60,51 +71,20 @@ public class ProblemActivity extends AppCompatActivity {
         blocks[6].setOnTouchListener(new BlockTouchListener());
         blocks[7] = findViewById(R.id.block7);
         blocks[7].setOnTouchListener(new BlockTouchListener());
-        System.out.println(String.format("Setup: Activity Blocks created."));
 
-        problemIndex = intent.getIntExtra("problemID",-1);
-        System.out.println("Setup: Loading problem " + problemIndex);
-        problem = pl.get(problemIndex);
-        probBlocks = problem.getBlocks();
-        printProblemLines();
-        setupBlocks();
-
-        blockReturn = findViewById(R.id.blockreturn);
-        blockReturn.setOnDragListener(new BlockReturnDragListener());
-
-        clickSoundMP = MediaPlayer.create(this, R.raw.click);
-    }
-
-    //SETUP FUNCTIONS
-
-    public void setupBlocks() {
-        for (TextView _block : blocks) {
-            //Make every block visible
-            _block.setVisibility(View.VISIBLE);
-        }
-
-        //number of required blocks
+        for (TextView _block : blocks) { _block.setVisibility(View.VISIBLE); }
         int numBlocks = probBlocks.length;
-
         for(int i=0; i<numBlocks;i++) {
-            //setup blocks
             blocks[i].setText(probBlocks[i].getText());
             probBlocks[i].setOriginal(blocks[i].getId());
-            probBlocks[i].setCurrent(blocks[i].getId());
-            probBlocks[i].setPrevious(blocks[i].getId());
-            System.out.println(String.format("Setup: Added \"%s\" block.", (String) probBlocks[i].getText()));
+            probBlocks[i].resetBlock();
         }
-
-        for(int j=7; j>= numBlocks; j--) {
-            //set unused to invisible
-            blocks[j].setVisibility(View.INVISIBLE);
-        }
-        System.out.println(String.format("Setup: Activity Blocks setup complete."));
+        for(int j=7; j>= numBlocks; j--) { blocks[j].setVisibility(View.INVISIBLE); }
     }
 
     public void printProblemLines() {
         String[][] problemLines = problem.getProbLines();
-
+        LinearLayout vlayout = findViewById(R.id.vlayout);
         for(int i =0;i<problemLines.length;i++) {
             LinearLayout hlayout = new LinearLayout(this);
             hlayout.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
@@ -152,12 +132,9 @@ public class ProblemActivity extends AppCompatActivity {
     //SKIP FUNCTIONS
 
     public void skip(View view) {
-        //found @https://stackoverflow.com/questions/2478517/how-to-display-a-yes-no-dialog-box-on-android
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-
         builder.setTitle("Skip?");
         builder.setMessage("Are you sure you want to skip this question?");
-
         builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
             @RequiresApi(api = Build.VERSION_CODES.M)
             public void onClick(DialogInterface dialog, int which) {
@@ -166,7 +143,6 @@ public class ProblemActivity extends AppCompatActivity {
                 dialog.dismiss();
             }
         });
-
         builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -182,9 +158,7 @@ public class ProblemActivity extends AppCompatActivity {
 
     public void viewProblem(View view) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("");
         builder.setTitle(problem.getProbDesc());
-
         builder.setNeutralButton("Dismiss", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -199,10 +173,8 @@ public class ProblemActivity extends AppCompatActivity {
 
     public void back(View view) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-
         builder.setTitle("Go Back");
         builder.setMessage("Are you sure you want to return to the homepage? All unsaved progress will be lost.");
-
         builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
                 //Return to the Homepage
@@ -210,7 +182,6 @@ public class ProblemActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-
         builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -244,7 +215,10 @@ public class ProblemActivity extends AppCompatActivity {
                 @RequiresApi(api = Build.VERSION_CODES.M)
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    giveHint();
+                    if(!hintGiven) {
+                        giveHint();
+                        hintGiven = true;
+                    }
                     dialog.dismiss();
                 }
             });
@@ -265,7 +239,7 @@ public class ProblemActivity extends AppCompatActivity {
     }
 
     public void nextProblem() {
-        intent = new Intent(this, ProblemActivity.class);
+        Intent intent = new Intent(this, ProblemActivity.class);
         if(problemIndex + 1 == pl.size()) {
             problemIndex = 0;
         } else {
@@ -285,9 +259,8 @@ public class ProblemActivity extends AppCompatActivity {
             //reset original block
             String currentText = slot.getCurrentText();
             resetBlock(currentText);
-        } else {
-            //do nothing to the slot
         }
+
         String[] solution = problem.getSolution();
         String correctAnswer = solution[slotID];
 
@@ -314,14 +287,13 @@ public class ProblemActivity extends AppCompatActivity {
     //MISC FUNCTIONS
 
     public int findProbBlock(String text) throws MissingBlockException{
-        int index = -1;
         for(int i=0; i<probBlocks.length; i++){
             if(probBlocks[i].getText().equals(text)) {
                 //we have found our block
-                index = i;
+                return i;
             }
         }
-        return index;
+        throw new MissingBlockException("CRASH: Block not found");
     }
 
     public void disableBlock(TextView tv) {
@@ -350,7 +322,6 @@ public class ProblemActivity extends AppCompatActivity {
     //LISTENER FUNCTIONS
 
     private final class BlockTouchListener implements View.OnTouchListener {
-
         @RequiresApi(api = Build.VERSION_CODES.N)
         public boolean onTouch(View view, MotionEvent motionEvent) {
             if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
@@ -381,16 +352,13 @@ public class ProblemActivity extends AppCompatActivity {
                     TextView dropped = (TextView) event.getLocalState(); //this is the object that was dropped
                     String text = (String) dropped.getText(); //get the text of the dropped object
                     try {
-                        int blockIndex = findProbBlock(text); //find the problem block this text matches to
-                        probBlocks[blockIndex].setPrevious(probBlocks[blockIndex].getCurrent()); //set the previous location of the block to its current before updating current
-                        probBlocks[blockIndex].setCurrent(target.getId()); //set the current location of the block to current slot
+                        probBlocks[findProbBlock(text)].updateCurrent(target.getId()); //set the current location of the block to current slot
 
                         if(((Slot) target).isEmpty()) {
-                            //set full
-                            //set text
+                            ((Slot) target).setFull(text); //set the slot text to the new blocks text
+                            target.setOnTouchListener(new BlockTouchListener());
                         } else {
-                            String oldtext = (String) ((Slot) target).getText(); //get the old blocks text
-                            resetBlock(oldtext);
+                            resetBlock((String) ((Slot) target).getText());
                         }
 
                         boolean isBlock = false;
@@ -402,18 +370,11 @@ public class ProblemActivity extends AppCompatActivity {
 
                         if(isBlock) {
                             disableBlock(dropped);
-                            System.out.println("Blocks: previous used to be a block");
                         } else {
                             ((Slot) dropped).setEmpty();
-                            System.out.println("Blocks: previous used to be a slot");
                         }
 
-                        ((Slot) target).setFull(text); //set the slot text to the new blocks text
-                        target.setOnTouchListener(new BlockTouchListener());
-                        System.out.println("Dropped: set target text to " + text);
-
                         clickSoundMP.start();
-
                     } catch (ClassCastException ex) {
                         ex.printStackTrace();
                         System.out.println("CRASH: Attempted to cast a TextView to Slot. id of textview is: " + target.getId() + "\n" + ex.getMessage());
@@ -450,25 +411,21 @@ public class ProblemActivity extends AppCompatActivity {
 
                     try {
                         boolean isBlock = false;
-                        for(int i = 0; i<blocks.length; i++) {
-                            if(dropped.getId() == blocks[i].getId()) {
+                        for (TextView block : blocks) {
+                            if (dropped.getId() == block.getId()) {
                                 //previous was a block, do nothing
                                 isBlock = true;
                             }
                         }
 
-                        if(isBlock) {
-                            //do nothing
-                        } else {
+                        if(!isBlock) {
                             ((Slot) dropped).setEmpty(); //set previous to empty
                             resetBlock(text);
                             clickSoundMP.start();
                         }
-
                     } catch (ClassCastException ex) {
                         System.out.println("CRASH: Previous slot is somehow now type slot");
                     }
-
                     break;
                 case DragEvent.ACTION_DRAG_ENDED:
                     //no action necessary

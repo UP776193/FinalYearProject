@@ -44,11 +44,13 @@ public class Slot extends android.widget.TextView {
         resetCurrentText();
         this.setText(this.currentText);
         this.setOnTouchListener(null);
+        this.setBackgroundResource(R.color.colorSlots);
     }
 
     public void setFull(String text) {
         this.isEmpty = false;
         setCurrentText(text);
+        this.setBackgroundResource(R.color.colorBlocks);
     }
 
     public String getCurrentText() {
@@ -62,7 +64,7 @@ public class Slot extends android.widget.TextView {
     }
 
     public void resetCurrentText() {
-        this.currentText = "______";
+        this.currentText = "      ";
         this.setText(this.currentText);
     }
 

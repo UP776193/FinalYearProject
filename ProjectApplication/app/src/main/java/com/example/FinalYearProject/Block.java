@@ -7,23 +7,18 @@ public class Block {
     private int previous;
     private String text;
 
-
-    public Block(int current, int original, int previous, String text){
-        this.current = current;
-        this.original = original;
-        this.previous = previous;
-        this.text = text;
-    }
-
-    public Block(int blockID, String text){
-        this.current = blockID;
-        this.original = blockID;
-        this.previous = blockID;
-        this.text = text;
-    }
-
     public Block(String text){
         this.text = text;
+    }
+
+    public void updateCurrent(int newCurrent) {
+        this.setCurrent(this.getPrevious());
+        this.setPrevious(newCurrent);
+    }
+
+    public void resetBlock() {
+        this.setCurrent(this.getOriginal());
+        this.setPrevious(this.getOriginal());
     }
 
     public int getCurrent() {
