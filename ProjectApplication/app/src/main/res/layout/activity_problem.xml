@@ -7,6 +7,30 @@
     android:background="@color/colorPrimary"
     tools:context=".ProblemActivity">
 
+    <TextView
+        android:id="@+id/tvScore"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:gravity="end"
+        android:text="Score:"
+        android:textAppearance="@style/problemText"
+        app:layout_constraintBottom_toTopOf="@id/vlayout"
+        app:layout_constraintEnd_toStartOf="@id/tvScore2"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/tvScore2"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="100"
+        android:textAppearance="@style/problemText"
+        app:layout_constraintBottom_toTopOf="@id/vlayout"
+        app:layout_constraintEnd_toStartOf="@id/sidebarLayout"
+        app:layout_constraintStart_toEndOf="@+id/tvScore"
+        app:layout_constraintTop_toTopOf="parent" />
+
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/sidebarLayout"
         android:layout_width="0dp"
@@ -60,17 +84,28 @@
         <Button
             android:id="@+id/btnViewProblem"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginLeft="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginRight="8dp"
+            android:layout_height="50dp"
             android:onClick="viewProblem"
             android:text="View Problem"
+            android:textSize="12sp"
             app:layout_constraintBottom_toTopOf="@id/blockLayout"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/btnHint"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
+
+        <Button
+            android:id="@+id/btnHint"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginLeft="8dp"
+            android:onClick="giveHint"
+            android:text="Hint (1)"
+            app:layout_constraintBottom_toTopOf="@id/blockLayout"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/btnViewProblem"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.06" />
 
         <TextView
             android:id="@+id/blockreturn"
@@ -250,17 +285,19 @@
                 app:layout_constraintTop_toBottomOf="@+id/block6" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <LinearLayout
         android:id="@+id/vlayout"
         android:layout_width="450dp"
         android:layout_height="0dp"
-        android:background="@color/layoutBackground"
         android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/sidebarLayout"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@id/tvScore">
+
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

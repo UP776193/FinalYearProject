@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.view.DragEvent;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -30,7 +31,10 @@ public class ProblemActivity extends AppCompatActivity {
     private Block[] probBlocks; //Used to keep track of where blocks are
     private MediaPlayer clickSoundMP;
     private int problemIndex;
-    private boolean hintGiven;
+    private int numHints;
+
+    //CONSTANTS
+    private final int MAX_NUMBER_HINTS = 2;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,7 +43,8 @@ public class ProblemActivity extends AppCompatActivity {
         blocks = new TextView[8];
         slots = new ArrayList<>();
 
-        hintGiven = false;
+        numHints = MAX_NUMBER_HINTS;
+        ((Button) findViewById(R.id.btnHint)).setText("Hint (" + numHints + ")");
 
         problemIndex = getIntent().getIntExtra("problemID",-1);
         problem = pl.get(problemIndex);
@@ -215,10 +220,6 @@ public class ProblemActivity extends AppCompatActivity {
                 @RequiresApi(api = Build.VERSION_CODES.M)
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    if(!hintGiven) {
-                        giveHint();
-                        hintGiven = true;
-                    }
                     dialog.dismiss();
                 }
             });
@@ -250,7 +251,7 @@ public class ProblemActivity extends AppCompatActivity {
         finish();
     }
 
-    private void giveHint() {
+    public void giveHint(View view) {
         //take a random slot
         int slotID = (new Random()).nextInt(slots.size());
         Slot slot = slots.get(slotID);
@@ -281,6 +282,14 @@ public class ProblemActivity extends AppCompatActivity {
                 _slot.setOnTouchListener(null);
                 _slot.setEmpty();
             }
+        }
+        numHints -= 1;
+        if(numHints == 0) {
+            //set hint button to be disabled if run out of hints
+            findViewById(R.id.btnHint).setEnabled(false);
+            ((Button) findViewById(R.id.btnHint)).setText("Hint");
+        } else {
+            ((Button) findViewById(R.id.btnHint)).setText("Hint (" + numHints + ")");
         }
     }
 
