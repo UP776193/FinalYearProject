@@ -58,14 +58,27 @@ public class ProblemActivity extends AppCompatActivity {
         printProblemLines();
         setupBlocks();
 
+        try {
+            highScore = (int) scores.get(problemIndex);
+            ((TextView) findViewById(R.id.tvHighestScore)).setText("Highest Score: " + highScore);
+        } catch (ArrayIndexOutOfBoundsException ex) {
+            highScore = -1;
+            ((TextView) findViewById(R.id.tvHighestScore)).setText("Highest Score: Not Attempted");
+        }
+
         score = MAX_SCORE;
-        highScore = (int) scores.get(problemIndex);
         ((TextView) findViewById(R.id.tvScore)).setText("Score: " + score);
-        ((TextView) findViewById(R.id.tvHighestScore)).setText("Highest Score: " + highScore);
 
         findViewById(R.id.blockreturn).setOnDragListener(new BlockReturnDragListener());
 
         clickSoundMP = MediaPlayer.create(this, R.raw.click);
+    }
+
+    public void onDestroy() {
+        //save scores before closing this activity
+        AssetWriter aw = new AssetWriter(this);
+        aw.writeScores();
+        super.onDestroy();
     }
 
     //SETUP FUNCTIONS
@@ -350,6 +363,7 @@ public class ProblemActivity extends AppCompatActivity {
             score = MIN_SCORE;
         }
 
+        scores.add(problemIndex, score);
         ((TextView) findViewById(R.id.tvScore)).setText("Score: " + score);
     }
 

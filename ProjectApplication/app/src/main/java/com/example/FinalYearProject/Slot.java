@@ -25,14 +25,14 @@ public class Slot extends android.widget.TextView {
 
     public void calcNewPadding() {
         if(this.currentText.length() < 3) {
-            this.setPadding(40,40,40,40);
+            this.setPadding(40,20,40,20);
         } else {
             this.setDefaultPadding();
         }
     }
 
     public void setDefaultPadding() {
-        this.setPadding(20, 40, 20, 40);
+        this.setPadding(20, 20, 20, 20);
     }
 
     public boolean isEmpty() {
