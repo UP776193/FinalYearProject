@@ -20,13 +20,14 @@ public class AssetWriter {
     }
 
     public void writeScores() {
-        File dir = new File(context.getFilesDir().getAbsolutePath() + File.separator
+        File file = new File(context.getFilesDir().getAbsolutePath() + File.separator
                 + "scores.txt");
-        if (!dir.exists()) {
-            dir.mkdirs();
-        }
+        System.out.println("WRITING: " + file.toString());
         try {
-            ObjectOutput out = new ObjectOutputStream(new FileOutputStream(dir));
+            if (!file.exists()) {
+                file.createNewFile();
+            }
+            ObjectOutput out = new ObjectOutputStream(new FileOutputStream(file));
             out.writeObject(scores);
             out.close();
         }  catch(FileNotFoundException ex) {

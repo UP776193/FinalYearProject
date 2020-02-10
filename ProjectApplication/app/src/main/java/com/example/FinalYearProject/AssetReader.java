@@ -20,11 +20,9 @@ public class AssetReader {
     private ArrayList<Problem> problemList = new ArrayList<Problem>();
     private ArrayList scoreList = new ArrayList();
     private Context context;
-    private String dir;
 
     public AssetReader(Context context) {
         this.context = context;
-        dir = context.getFilesDir().getAbsolutePath();
         loadAssets();
     }
 
@@ -38,6 +36,7 @@ public class AssetReader {
 
     public void loadAssets() {
         readProblems();
+        initialiseScoreList();
         readScores();
     }
 
@@ -80,16 +79,26 @@ public class AssetReader {
         System.out.println("Setup: number of problems" + problemList.size());
     }
 
+    private void initialiseScoreList() {
+        for (int i=0;i<problemList.size();i++){
+            scoreList.add(-1);
+        }
+    }
+
     private void readScores() {
         //Read Scores
         try {
-            FileInputStream fileInputStream = new FileInputStream(new File(dir + File.separator + "scores.txt"));
-            ObjectInputStream ois = new ObjectInputStream(fileInputStream);
-            scoreList = (ArrayList) ois.readObject();
-            ois.close();
-
-            fileInputStream.close();
-
+            File file = new File(context.getFilesDir().getAbsolutePath() + File.separator + "scores.txt");
+            System.out.println("READING: " + file.toString());
+            if(!file.exists()) {
+                FileInputStream fileInputStream = new FileInputStream(file);
+                ObjectInputStream ois = new ObjectInputStream(fileInputStream);
+                scoreList = (ArrayList) ois.readObject();
+                ois.close();
+                fileInputStream.close();
+            } else {
+                file.createNewFile();
+            }
         } catch (FileNotFoundException ex) {
             ex.printStackTrace();
         } catch (IOException ex) {
