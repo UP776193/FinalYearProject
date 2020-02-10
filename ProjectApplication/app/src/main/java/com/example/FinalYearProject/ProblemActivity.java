@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Random;
 
 import static com.example.FinalYearProject.HomepageActivity.pl;
+import static com.example.FinalYearProject.HomepageActivity.scores;
 
 @RequiresApi(api = Build.VERSION_CODES.M)
 public class ProblemActivity extends AppCompatActivity {
@@ -32,9 +33,13 @@ public class ProblemActivity extends AppCompatActivity {
     private MediaPlayer clickSoundMP;
     private int problemIndex;
     private int numHints;
+    private int score;
+    private int highScore;
 
     //CONSTANTS
     private final int MAX_NUMBER_HINTS = 2;
+    private final int MAX_SCORE = 100;
+    private final int MIN_SCORE = 0;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,6 +49,7 @@ public class ProblemActivity extends AppCompatActivity {
         slots = new ArrayList<>();
 
         numHints = MAX_NUMBER_HINTS;
+
         ((Button) findViewById(R.id.btnHint)).setText("Hint (" + numHints + ")");
 
         problemIndex = getIntent().getIntExtra("problemID",-1);
@@ -51,6 +57,11 @@ public class ProblemActivity extends AppCompatActivity {
         probBlocks = problem.getBlocks();
         printProblemLines();
         setupBlocks();
+
+        score = MAX_SCORE;
+        highScore = (int) scores.get(problemIndex);
+        ((TextView) findViewById(R.id.tvScore)).setText("Score: " + score);
+        ((TextView) findViewById(R.id.tvHighestScore)).setText("Highest Score: " + highScore);
 
         findViewById(R.id.blockreturn).setOnDragListener(new BlockReturnDragListener());
 
@@ -252,6 +263,9 @@ public class ProblemActivity extends AppCompatActivity {
     }
 
     public void giveHint(View view) {
+        //update score
+        updateScore(-25);
+
         //take a random slot
         int slotID = (new Random()).nextInt(slots.size());
         Slot slot = slots.get(slotID);
@@ -326,6 +340,17 @@ public class ProblemActivity extends AppCompatActivity {
             ex.printStackTrace();
             System.out.println("CRASH: Unable to reset block.");
         }
+    }
+
+    private void updateScore(int amount) {
+        score += amount;
+        if(score > MAX_SCORE) {
+            score = MAX_SCORE;
+        } else if(score < MIN_SCORE) {
+            score = MIN_SCORE;
+        }
+
+        ((TextView) findViewById(R.id.tvScore)).setText("Score: " + score);
     }
 
     //LISTENER FUNCTIONS

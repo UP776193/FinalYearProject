@@ -11,14 +11,15 @@ import java.util.ArrayList;
 public class HomepageActivity extends AppCompatActivity {
 
     static ArrayList<Problem> pl;
+    static ArrayList scores;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_homepage);
-        problemReader pr = new problemReader(this);
-        pl = pr.getProblemList();
-
+        AssetReader ar = new AssetReader(this);
+        pl = ar.getProblemList();
+        scores = ar.getScoreList();
     }
 
     public void startGame(View view){

@@ -8,12 +8,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-public class problemReader {
+public class AssetReader {
 
     private ArrayList<Problem> problemList = new ArrayList<Problem>();
+    private ArrayList scoreList = new ArrayList();
     private Context context;
 
-    public problemReader(Context context) {
+    public AssetReader(Context context) {
         this.context = context;
         loadAssets();
     }
@@ -22,7 +23,17 @@ public class problemReader {
         return problemList;
     }
 
+    public ArrayList getScoreList() {
+        return scoreList;
+    }
+
     public void loadAssets() {
+        readProblems();
+        readScores();
+    }
+
+    private void readProblems() {
+        //Read Problems
         try {
             AssetManager assetManager = context.getAssets();
             DataInputStream textFileStream = new DataInputStream(assetManager.open("problems.txt"));
@@ -49,7 +60,6 @@ public class problemReader {
 
                 problem = new Problem(problemList.size(), problemDesc, problemLines, solution, blocks);
                 problemList.add(problem);
-                System.out.println("Setup: Added problem " + (problemList.size() - 1));
             }
         } catch (IOException ex) {
             System.out.println("CRASH: System failed to read text input.");
@@ -59,6 +69,23 @@ public class problemReader {
             ex.printStackTrace();
         }
         System.out.println("Setup: number of problems" + problemList.size());
+    }
 
+    private void readScores() {
+        //Read Scores
+        try {
+            AssetManager assetManager = context.getAssets();
+            DataInputStream textFileStream = new DataInputStream(assetManager.open("scores.txt"));
+            Scanner scanner = new Scanner(textFileStream);
+
+            while(scanner.hasNextLine()) {
+                int score = Integer.parseInt(scanner.nextLine());
+                scoreList.add(score);
+            }
+
+        } catch(IOException ex) {
+            System.out.println("CRASH: " + ex.getMessage());
+            ex.printStackTrace();
+        }
     }
 }
