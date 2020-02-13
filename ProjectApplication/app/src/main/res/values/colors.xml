@@ -4,7 +4,7 @@
     <color name="colorPrimaryDark">#052E3B</color>
     <color name="colorAccent">#282C34</color>
     <color name="colorBlocks">#EF476F</color>
-    <color name="colorBlocks2">#FFD166</color>
+    <color name="score">#FFD166</color>
     <color name="colorSlots">#118AB2</color>
     <color name="layoutBackground">#282C34</color>
     <color name="colorText">#FFFFFF</color>

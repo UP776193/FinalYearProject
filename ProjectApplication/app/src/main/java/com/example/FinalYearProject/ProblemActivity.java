@@ -35,6 +35,7 @@ public class ProblemActivity extends AppCompatActivity {
     private int numHints;
     private int score;
     private int highScore;
+    private int freeMoves;
 
     //CONSTANTS
     private final int MAX_NUMBER_HINTS = 2;
@@ -47,6 +48,7 @@ public class ProblemActivity extends AppCompatActivity {
 
         blocks = new TextView[8];
         slots = new ArrayList<>();
+
 
         numHints = MAX_NUMBER_HINTS;
 
@@ -63,6 +65,7 @@ public class ProblemActivity extends AppCompatActivity {
 
         findViewById(R.id.blockreturn).setOnDragListener(new BlockReturnDragListener());
 
+        freeMoves = slots.size();
         clickSoundMP = MediaPlayer.create(this, R.raw.click);
 
         highScore = (int) scores.get(problemIndex);
@@ -75,7 +78,7 @@ public class ProblemActivity extends AppCompatActivity {
 
     public void onDestroy() {
         //save scores before closing this activity
-        scores.set(problemIndex - 1, score);
+        scores.set(problemIndex, score);
         //AssetWriter aw = new AssetWriter(this);
         //aw.writeScores();
         super.onDestroy();
@@ -226,30 +229,53 @@ public class ProblemActivity extends AppCompatActivity {
 
     public void submit(View view) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        if (checkCorrect()) {
-            builder.setTitle("CORRECT");
-            builder.setMessage("Well Done, that's correct!");
-            builder.setNeutralButton("Next Question", new DialogInterface.OnClickListener() {
-                @RequiresApi(api = Build.VERSION_CODES.M)
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    nextProblem();
-                    dialog.dismiss();
-                }
-            });
+        if(allFilled() ) {
+            //then check correct
+            if (checkCorrect()) {
+                builder.setTitle("CORRECT");
+                builder.setMessage("Well Done, that's correct!");
+                builder.setNeutralButton("Next Question", new DialogInterface.OnClickListener() {
+                    @RequiresApi(api = Build.VERSION_CODES.M)
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        nextProblem();
+                        dialog.dismiss();
+                    }
+                });
+            } else {
+                builder.setTitle("INCORRECT");
+                builder.setMessage("There appears to be a block in the wrong place.");
+                builder.setNeutralButton("Try Again", new DialogInterface.OnClickListener() {
+                    @RequiresApi(api = Build.VERSION_CODES.M)
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+            }
         } else {
-            builder.setTitle("INCORRECT");
-            builder.setMessage("There appears to be a block in the wrong place.");
-            builder.setNeutralButton("Try Again", new DialogInterface.OnClickListener() {
-                @RequiresApi(api = Build.VERSION_CODES.M)
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    dialog.dismiss();
-                }
-            });
-        }
+                builder.setTitle("NOT COMPLETE");
+                builder.setMessage("There seems to be some empty slots!");
+                builder.setNeutralButton("Go Back", new DialogInterface.OnClickListener() {
+                    @RequiresApi(api = Build.VERSION_CODES.M)
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+            }
         AlertDialog alert = builder.create();
         alert.show();
+    }
+
+    public boolean allFilled() {
+        boolean filled = true;
+        for(Slot s : slots) {
+            if(s.isEmpty()) {
+                filled = false;
+            }
+        }
+        return filled;
     }
 
     public boolean checkCorrect() {
@@ -265,12 +291,13 @@ public class ProblemActivity extends AppCompatActivity {
 
     public void nextProblem() {
         Intent intent = new Intent(this, ProblemActivity.class);
-        if(problemIndex + 1 == pl.size()) {
-            problemIndex = 0;
+        int pi = problemIndex;
+        if(pi + 1 == pl.size()) {
+            pi = 0;
         } else {
-            problemIndex++;
+            pi++;
         }
-        intent.putExtra("problemID", problemIndex);
+        intent.putExtra("problemID", pi);
         startActivity(intent);
         finish();
     }
@@ -422,6 +449,10 @@ public class ProblemActivity extends AppCompatActivity {
                             ((Slot) dropped).setEmpty();
                         }
 
+                        if(freeMoves <= 0) {
+                            updateScore(-10);
+                        }
+                        freeMoves--;
                         clickSoundMP.start();
                     } catch (ClassCastException ex) {
                         ex.printStackTrace();
