@@ -76,8 +76,8 @@ public class ProblemActivity extends AppCompatActivity {
     public void onDestroy() {
         //save scores before closing this activity
         scores.set(problemIndex - 1, score);
-        AssetWriter aw = new AssetWriter(this);
-        aw.writeScores();
+        //AssetWriter aw = new AssetWriter(this);
+        //aw.writeScores();
         super.onDestroy();
     }
 
@@ -406,6 +406,7 @@ public class ProblemActivity extends AppCompatActivity {
                             target.setOnTouchListener(new BlockTouchListener());
                         } else {
                             resetBlock((String) ((Slot) target).getText());
+                            ((Slot) target).setFull(text);
                         }
 
                         boolean isBlock = false;
