@@ -6,6 +6,12 @@ public class Block {
     private int original;
     private int previous;
     private String text;
+    private Type type;
+
+    public Block(String text, Type type) {
+        this.text = text;
+        this.type = type;
+    }
 
     public Block(String text){
         this.text = text;
@@ -20,6 +26,8 @@ public class Block {
         this.setCurrent(this.getOriginal());
         this.setPrevious(this.getOriginal());
     }
+
+    public Type getType() { return type; }
 
     public int getCurrent() {
         return current;

@@ -11,6 +11,7 @@ public class Slot extends android.widget.TextView {
 
     private boolean isEmpty;
     private String currentText;
+    private Type type;
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     public Slot (Context context) {
@@ -21,6 +22,7 @@ public class Slot extends android.widget.TextView {
         this.setDefaultPadding();
         this.setTextAppearance(R.style.problemText);
         this.setBackgroundResource(R.color.colorSlots);
+        this.type = Type.MISC;
     }
 
     public void calcNewPadding() {
@@ -61,6 +63,14 @@ public class Slot extends android.widget.TextView {
         this.currentText = currentText;
         calcNewPadding();
         this.setText(this.currentText);
+    }
+
+    public void setType(Type type) {
+        this.type = type;
+    }
+
+    public Type getType() {
+        return type;
     }
 
     public void resetCurrentText() {

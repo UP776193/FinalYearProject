@@ -124,9 +124,9 @@ public class ProblemActivity extends AppCompatActivity {
             vlayout.addView(hlayout);
 
             for(int j = 0;j<problemLines[i].length;j++) {
-                if(problemLines[i][j].equals(getResources().getString(R.string.slotcode))) {
+                if(problemLines[i][j].charAt(0) == '`') {
                     //Create a slot here
-                    Slot text = createSlot();
+                    Slot text = createSlot(problemLines[i][j]);
                     LinearLayout.LayoutParams params = new LinearLayout.LayoutParams((int) LinearLayout.LayoutParams.WRAP_CONTENT, (int) LinearLayout.LayoutParams.WRAP_CONTENT);
                     text.setLayoutParams(params);
                     hlayout.addView(text);
@@ -154,8 +154,29 @@ public class ProblemActivity extends AppCompatActivity {
         return tv;
     }
 
-    private Slot createSlot() {
+    private Slot createSlot(String slottext) {
         Slot slot = new Slot(this);
+        switch(slottext) {
+            case "`OP":
+                slot.setType(Type.OPERATOR);
+                break;
+            case "`CON":
+                slot.setType(Type.CONSTANT);
+                break;
+            case "`DT":
+                slot.setType(Type.DATATYPE);
+                break;
+            case "`VAR":
+                slot.setType(Type.VARIABLE);
+                break;
+            case "`MISC":
+                slot.setType(Type.MISC);
+                break;
+            default:
+                System.out.println("SLOTS: Setting slot to default MISC type");
+                slot.setType(Type.MISC);
+                break;
+        }
         slot.setOnDragListener(new SlotDragListener());
         slots.add(slot);
         return slot;
