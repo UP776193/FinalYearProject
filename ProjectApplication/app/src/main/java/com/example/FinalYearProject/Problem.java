@@ -17,19 +17,19 @@ public class Problem {
         for(int i=0;i<blocks.length;i++) {
             String[] text = blocks[i].split("`");
             switch(text[1]) {
-                case "`OP":
+                case "OP":
                     this.blocks[i] = new Block(text[0], Type.OPERATOR);
                     break;
-                case "`CON":
+                case "CON":
                     this.blocks[i] = new Block(text[0], Type.CONSTANT);
                     break;
-                case "`DT":
+                case "DT":
                     this.blocks[i] = new Block(text[0], Type.DATATYPE);
                     break;
-                case "`VAR":
+                case "VAR":
                     this.blocks[i] = new Block(text[0], Type.VARIABLE);
                     break;
-                case "`MISC":
+                case "MISC":
                     this.blocks[i] = new Block(text[0], Type.MISC);
                     break;
                 default:
@@ -37,8 +37,6 @@ public class Problem {
                     this.blocks[i] = new Block(text[0], Type.MISC);
                     break;
             }
-            this.blocks[i] = new Block(text[0]);
-
         }
     }
 

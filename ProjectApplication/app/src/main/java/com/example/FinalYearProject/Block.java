@@ -27,7 +27,7 @@ public class Block {
         this.setPrevious(this.getOriginal());
     }
 
-    public Type getType() { return type; }
+    public Type getType() { return this.type; }
 
     public int getCurrent() {
         return current;

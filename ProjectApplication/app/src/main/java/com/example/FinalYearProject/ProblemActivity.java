@@ -252,7 +252,8 @@ public class ProblemActivity extends AppCompatActivity {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         if(allFilled() ) {
             //then check correct
-            if (checkCorrect()) {
+            String errorcode = checkCorrect();
+            if (errorcode == "") {
                 builder.setTitle("CORRECT");
                 builder.setMessage("Well Done, that's correct!");
                 builder.setNeutralButton("Next Question", new DialogInterface.OnClickListener() {
@@ -265,7 +266,7 @@ public class ProblemActivity extends AppCompatActivity {
                 });
             } else {
                 builder.setTitle("INCORRECT");
-                builder.setMessage("There appears to be a block in the wrong place.");
+                builder.setMessage(errorcode);
                 builder.setNeutralButton("Try Again", new DialogInterface.OnClickListener() {
                     @RequiresApi(api = Build.VERSION_CODES.M)
                     @Override
@@ -299,15 +300,24 @@ public class ProblemActivity extends AppCompatActivity {
         return filled;
     }
 
-    public boolean checkCorrect() {
+    public String checkCorrect() {
         String[] solution = problem.getSolution();
-        boolean correct = true;
         for(int i = 0; i<slots.size(); i++){
-            if(!slots.get(i).getText().equals(solution[i])) {
-                correct = false;
+            Slot slot = slots.get(i);
+            if(!slot.getCurrentText().equals(solution[i])) {
+                try {
+                    int blockID = findProbBlock(slot.getCurrentText());
+                    Block block = probBlocks[blockID];
+                    if(slot.getType() != block.getType()) {
+                        return("You have a " + block.getType().toString() + " where there should be a " + slot.getType().toString() + ".");
+                    }
+                } catch (MissingBlockException e) {
+                    e.printStackTrace();
+                }
+                return "You seem to have a logic error, try again.";
             }
         }
-        return correct;
+        return "";
     }
 
     public void nextProblem() {
