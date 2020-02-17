@@ -232,6 +232,7 @@ public class ProblemActivity extends AppCompatActivity {
                 //Return to the Homepage
                 Intent intent = new Intent(getBaseContext(), HomepageActivity.class);
                 startActivity(intent);
+                finish();
             }
         });
         builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {

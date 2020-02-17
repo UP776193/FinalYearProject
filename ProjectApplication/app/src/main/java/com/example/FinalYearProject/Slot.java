@@ -85,6 +85,7 @@ public class Slot extends android.widget.TextView {
         this.setTextAppearance(R.style.correctText);
         this.setOnTouchListener(null);
         this.setOnDragListener(null);
+        this.isEmpty = false;
     }
 
 

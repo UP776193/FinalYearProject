@@ -18,7 +18,7 @@ import java.util.Scanner;
 public class AssetReader {
 
     private ArrayList<Problem> problemList = new ArrayList<Problem>();
-    private ArrayList scoreList = new ArrayList();
+    private ArrayList<Integer> scoreList = new ArrayList<>();
     private Context context;
 
     public AssetReader(Context context) {
@@ -37,7 +37,7 @@ public class AssetReader {
     public void loadAssets() {
         readProblems();
         initialiseScoreList();
-        readScores();
+        //readScores();
     }
 
     private void readProblems() {
