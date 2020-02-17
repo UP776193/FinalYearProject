@@ -19,7 +19,7 @@
         </activity>
         <activity
             android:name="com.example.FinalYearProject.ProblemActivity"
-            android:screenOrientation="landscape">
+            android:screenOrientation="sensorLandscape">
         </activity>
     </application>
 </manifest>

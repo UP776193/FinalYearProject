@@ -38,7 +38,7 @@ public class ProblemActivity extends AppCompatActivity {
     private int freeMoves;
 
     //CONSTANTS
-    private final int MAX_NUMBER_HINTS = 2;
+    private final int MAX_NUMBER_HINTS = 1;
     private final int MAX_SCORE = 100;
     private final int MIN_SCORE = 0;
 
@@ -48,7 +48,6 @@ public class ProblemActivity extends AppCompatActivity {
 
         blocks = new TextView[8];
         slots = new ArrayList<>();
-
 
         numHints = MAX_NUMBER_HINTS;
 
@@ -306,18 +305,35 @@ public class ProblemActivity extends AppCompatActivity {
             Slot slot = slots.get(i);
             if(!slot.getCurrentText().equals(solution[i])) {
                 try {
-                    int blockID = findProbBlock(slot.getCurrentText());
-                    Block block = probBlocks[blockID];
-                    if(slot.getType() != block.getType()) {
-                        return("You have a " + block.getType().toString() + " where there should be a " + slot.getType().toString() + ".");
-                    }
+                    Block block = probBlocks[findProbBlock(slot.getCurrentText())];
+                    return createErrorMsg(slot, block);
                 } catch (MissingBlockException e) {
                     e.printStackTrace();
+                    return "You seem to have a logic error, try again.";
                 }
-                return "You seem to have a logic error, try again.";
             }
         }
         return "";
+    }
+
+    public String createErrorMsg(Slot slot, Block block) {
+        if(slot.getType() != block.getType()) {
+            return ("You have a " + block.getType().toString() + " where there should be a " + slot.getType().toString() + ".");
+        }
+        switch(slot.getType()) {
+            case OPERATOR:
+                return("You have a logic error, are you using the operators in a way that will achieve the final result?");
+            case CONSTANT:
+                return("You have a logic error, consider what the final result should be when the function runs.");
+            case VARIABLE:
+                return("You seem to have used a variable in the wrong place, consider the final result and the data type of the variable.");
+            case DATATYPE:
+                return("You seem to have a compilation error, are you using the correct data types?");
+            case MISC:
+            default:
+                break;
+        }
+        return "You seem to have a logic error, try again.";
     }
 
     public void nextProblem() {
