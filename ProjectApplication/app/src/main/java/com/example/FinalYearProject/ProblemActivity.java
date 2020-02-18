@@ -67,7 +67,7 @@ public class ProblemActivity extends AppCompatActivity {
         freeMoves = slots.size();
         clickSoundMP = MediaPlayer.create(this, R.raw.click);
 
-        highScore = (int) scores.get(problemIndex);
+        highScore = scores.get(problemIndex);
         if(highScore == -1) {
             ((TextView) findViewById(R.id.tvHighestScore)).setText("Highest Score: -");
         } else {
