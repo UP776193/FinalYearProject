@@ -23,12 +23,19 @@ public class HomepageActivity extends AppCompatActivity {
         scores = ar.getScoreList();
         int t = totalScore();
         TextView tvTotalScore = findViewById(R.id.tvTotalScore);
-        tvTotalScore.setText(String.valueOf(t));
+        //tvTotalScore.setText(String.valueOf(t));
+        tvTotalScore.setText("100");
     }
 
     public void startGame(View view){
         Intent intent = new Intent(this, ProblemActivity.class);
         intent.putExtra("problemID",0);
+        startActivity(intent);
+        finish();
+    }
+
+    public void LevelSelect(View view) {
+        Intent intent = new Intent(this, LevelSelect.class);
         startActivity(intent);
         finish();
     }
