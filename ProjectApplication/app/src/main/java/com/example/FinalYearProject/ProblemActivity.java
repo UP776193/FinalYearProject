@@ -1,8 +1,11 @@
 package com.example.FinalYearProject;
 
+import android.annotation.SuppressLint;
 import android.content.ClipData;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Bundle;
@@ -84,6 +87,7 @@ public class ProblemActivity extends AppCompatActivity {
 
     //SETUP FUNCTIONS
 
+    @SuppressLint("ClickableViewAccessibility")
     public void setupBlocks() {
         blocks[0] = findViewById(R.id.block0);
         blocks[0].setOnTouchListener(new BlockTouchListener());
@@ -115,32 +119,32 @@ public class ProblemActivity extends AppCompatActivity {
     public void printProblemLines() {
         String[][] problemLines = problem.getProbLines();
         LinearLayout vlayout = findViewById(R.id.vlayout);
-        for(int i =0;i<problemLines.length;i++) {
+        for (String[] problemLine : problemLines) {
             LinearLayout hlayout = new LinearLayout(this);
             hlayout.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
             hlayout.setOrientation(LinearLayout.HORIZONTAL);
             vlayout.addView(hlayout);
 
-            for(int j = 0;j<problemLines[i].length;j++) {
-                if(problemLines[i][j].charAt(0) == '`') {
+            for (String s : problemLine) {
+                if (s.charAt(0) == '`') {
                     //Create a slot here
-                    Slot text = createSlot(problemLines[i][j]);
+                    Slot text = createSlot(s);
                     LinearLayout.LayoutParams params = new LinearLayout.LayoutParams((int) LinearLayout.LayoutParams.WRAP_CONTENT, (int) LinearLayout.LayoutParams.WRAP_CONTENT);
                     text.setLayoutParams(params);
                     hlayout.addView(text);
                     System.out.println(String.format("Setup: Added \"%s\" line.", (String) text.getText()));
                 } else {
                     //Create a regular text view here
-                    TextView text = createTextView(problemLines[i][j]);
+                    TextView text = createTextView(s);
                     LinearLayout.LayoutParams params = new LinearLayout.LayoutParams((int) LinearLayout.LayoutParams.WRAP_CONTENT, (int) LinearLayout.LayoutParams.WRAP_CONTENT);
                     text.setLayoutParams(params);
-                    text.setText(problemLines[i][j]);
+                    text.setText(s);
                     hlayout.addView(text);
                     System.out.println(String.format("Setup: Added \"%s\" line.", (String) text.getText()));
                 }
             }
         }
-        System.out.println(String.format("Setup: Problem Lines setup complete."));
+        System.out.println("Setup: Problem Lines setup complete.");
     }
 
     private TextView createTextView(String text) {
@@ -252,14 +256,16 @@ public class ProblemActivity extends AppCompatActivity {
         if(allFilled() ) {
             //then check correct
             String errorcode = checkCorrect();
-            if (errorcode == "") {
+            if (errorcode.equals("")) {
                 builder.setTitle("CORRECT");
                 builder.setMessage("Well Done, that's correct!");
+                if(isHighScore(score)) {
+                    scores.set(problemIndex, score);
+                }
                 builder.setNeutralButton("Next Question", new DialogInterface.OnClickListener() {
                     @RequiresApi(api = Build.VERSION_CODES.M)
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        scores.set(problemIndex, score);
                         nextProblem();
                         dialog.dismiss();
                     }
@@ -267,6 +273,7 @@ public class ProblemActivity extends AppCompatActivity {
             } else {
                 builder.setTitle("INCORRECT");
                 builder.setMessage(errorcode);
+                updateScore(-10);
                 builder.setNeutralButton("Try Again", new DialogInterface.OnClickListener() {
                     @RequiresApi(api = Build.VERSION_CODES.M)
                     @Override
@@ -327,14 +334,14 @@ public class ProblemActivity extends AppCompatActivity {
             case CONSTANT:
                 return("You have a logic error, consider what the final result should be when the function runs.");
             case VARIABLE:
-                return("You seem to have used a variable in the wrong place, consider the final result and the data type of the variable.");
+                return("You have used a variable in the wrong place, consider the final result and the data type of the variable.");
             case DATATYPE:
-                return("You seem to have a compilation error, are you using the correct data types?");
+                return("You have a compilation error, are you using the correct data types?");
             case MISC:
             default:
                 break;
         }
-        return "You seem to have a logic error, try again.";
+        return "You have a logic error, try again.";
     }
 
     public void nextProblem() {
@@ -388,11 +395,17 @@ public class ProblemActivity extends AppCompatActivity {
         numHints -= 1;
         if(numHints == 0) {
             //set hint button to be disabled if run out of hints
-            findViewById(R.id.btnHint).setEnabled(false);
-            ((Button) findViewById(R.id.btnHint)).setText("Hint");
+            Button btnHint = findViewById(R.id.btnHint);
+            btnHint.setEnabled(false);
+            btnHint.setText("Hint");
+            btnHint.getBackground().setColorFilter(Color.GRAY, PorterDuff.Mode.MULTIPLY);
         } else {
             ((Button) findViewById(R.id.btnHint)).setText("Hint (" + numHints + ")");
         }
+    }
+
+    public boolean isHighScore(int score) {
+        return score > scores.get(problemIndex);
     }
 
     //MISC FUNCTIONS
