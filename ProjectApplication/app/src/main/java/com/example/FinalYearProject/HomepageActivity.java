@@ -23,8 +23,7 @@ public class HomepageActivity extends AppCompatActivity {
         scores = ar.getScoreList();
         int t = totalScore();
         TextView tvTotalScore = findViewById(R.id.tvTotalScore);
-        //tvTotalScore.setText(String.valueOf(t));
-        tvTotalScore.setText("100");
+        tvTotalScore.setText(String.valueOf(t));
     }
 
     public void startGame(View view){

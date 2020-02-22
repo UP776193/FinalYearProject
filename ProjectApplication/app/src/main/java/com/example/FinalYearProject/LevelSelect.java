@@ -4,6 +4,7 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import static com.example.FinalYearProject.HomepageActivity.pl;
+import static com.example.FinalYearProject.HomepageActivity.scores;
 
 import android.content.Intent;
 import android.os.Build;
@@ -32,7 +33,7 @@ public class LevelSelect extends AppCompatActivity {
             TextView tv = new TextView(this);
             tv.setTextAppearance(R.style.problemText);
             tv.setTextSize(18);
-            tv.setText("Level " + (i+1));
+            tv.setText("Level " + (i+1) + " : " + scores.get(i) + "/100");
             tv.setLayoutParams(params);
             tv.setOnClickListener(new LevelSelectListener());
             vlayout.addView(tv);

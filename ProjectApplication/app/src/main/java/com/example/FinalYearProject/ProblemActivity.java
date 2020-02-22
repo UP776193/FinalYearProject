@@ -77,9 +77,8 @@ public class ProblemActivity extends AppCompatActivity {
 
     public void onDestroy() {
         //save scores before closing this activity
-        scores.set(problemIndex, score);
-        //AssetWriter aw = new AssetWriter(this);
-        //aw.writeScores();
+        AssetWriter aw = new AssetWriter(this);
+        aw.writeScores();
         super.onDestroy();
     }
 
@@ -260,6 +259,7 @@ public class ProblemActivity extends AppCompatActivity {
                     @RequiresApi(api = Build.VERSION_CODES.M)
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
+                        scores.set(problemIndex, score);
                         nextProblem();
                         dialog.dismiss();
                     }

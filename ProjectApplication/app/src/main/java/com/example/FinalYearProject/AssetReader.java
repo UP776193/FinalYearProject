@@ -37,7 +37,7 @@ public class AssetReader {
     public void loadAssets() {
         readProblems();
         initialiseScoreList();
-        //readScores();
+        readScores();
     }
 
     private void readProblems() {
@@ -81,16 +81,16 @@ public class AssetReader {
 
     private void initialiseScoreList() {
         for (int i=0;i<problemList.size();i++){
-            scoreList.add(-1);
+            scoreList.add(0);
         }
     }
 
     private void readScores() {
         //Read Scores
         try {
-            File file = new File(context.getFilesDir().getAbsolutePath() + File.separator + "scores.txt");
-            System.out.println("READING: " + file.toString());
-            if(!file.exists()) {
+            File file = new File(context.getFilesDir(), "scores.txt");
+            System.out.println("Reading: " + file.toString());
+            if(file.exists()) {
                 FileInputStream fileInputStream = new FileInputStream(file);
                 ObjectInputStream ois = new ObjectInputStream(fileInputStream);
                 scoreList = (ArrayList) ois.readObject();
@@ -106,7 +106,5 @@ public class AssetReader {
         } catch (ClassNotFoundException ex) {
             ex.printStackTrace();
         }
-
-
     }
 }

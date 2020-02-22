@@ -20,8 +20,7 @@ public class AssetWriter {
     }
 
     public void writeScores() {
-        File file = new File(context.getFilesDir().getAbsolutePath() + File.separator
-                + "scores.txt");
+        File file = new File(context.getFilesDir(), "scores.txt");
         System.out.println("WRITING: " + file.toString());
         try {
             if (!file.exists()) {
