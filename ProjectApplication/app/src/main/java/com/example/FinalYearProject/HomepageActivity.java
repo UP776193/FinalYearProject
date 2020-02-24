@@ -46,4 +46,13 @@ public class HomepageActivity extends AppCompatActivity {
         }
         return t;
     }
+
+    public void resetScores(View view) {
+        for(int i=0;i<scores.size();i++) {
+            scores.set(i, 0);
+        }
+        AssetWriter aw = new AssetWriter(this);
+        aw.writeScores();
+    }
+
 }

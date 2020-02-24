@@ -9,6 +9,10 @@ import android.graphics.PorterDuff;
 import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Bundle;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.style.ForegroundColorSpan;
 import android.view.DragEvent;
 import android.view.MotionEvent;
 import android.view.View;
@@ -44,6 +48,8 @@ public class ProblemActivity extends AppCompatActivity {
     private final int MAX_NUMBER_HINTS = 1;
     private final int MAX_SCORE = 100;
     private final int MIN_SCORE = 0;
+    private final String SCORE_HEADER = "Score: ";
+    private final String HIGH_SCORE_HEADER = "High Score: ";
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,20 +68,15 @@ public class ProblemActivity extends AppCompatActivity {
         printProblemLines();
         setupBlocks();
 
+        highScore = scores.get(problemIndex);
         score = MAX_SCORE;
-        ((TextView) findViewById(R.id.tvScore)).setText("Score: " + score);
+        setScoreTextColours((TextView) findViewById(R.id.tvScore), score, SCORE_HEADER);
+        setScoreTextColours((TextView) findViewById(R.id.tvHighestScore), highScore, HIGH_SCORE_HEADER);
 
         findViewById(R.id.blockreturn).setOnDragListener(new BlockReturnDragListener());
 
         freeMoves = slots.size();
         clickSoundMP = MediaPlayer.create(this, R.raw.click);
-
-        highScore = scores.get(problemIndex);
-        if(highScore == -1) {
-            ((TextView) findViewById(R.id.tvHighestScore)).setText("Highest Score: -");
-        } else {
-            ((TextView) findViewById(R.id.tvHighestScore)).setText("Highest Score: " + highScore);
-        }
     }
 
     public void onDestroy() {
@@ -451,7 +452,30 @@ public class ProblemActivity extends AppCompatActivity {
             score = MIN_SCORE;
         }
         scores.set(problemIndex, score);
-        ((TextView) findViewById(R.id.tvScore)).setText("Score: " + score);
+        setScoreTextColours((TextView) findViewById(R.id.tvScore), score, SCORE_HEADER);
+    }
+
+    private void setScoreTextColours(TextView tv, int s, String header){
+        Spannable toSpan = new SpannableString(header + s);
+        toSpan.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.problemText)),0 ,header.length()-1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        switch(s) {
+            case -1:
+                tv.setText(header + "-");
+                tv.setTextAppearance(R.style.problemText);
+                break;
+            case 100:
+                toSpan.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.correctText)),header.length(), toSpan.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                tv.setText(toSpan);
+                break;
+            case 0:
+                toSpan.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.colorBlocks)),header.length(), toSpan.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                tv.setText(toSpan);
+                break;
+            default:
+                toSpan.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.score)),header.length(), toSpan.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                tv.setText(toSpan);
+                break;
+        }
     }
 
     //LISTENER FUNCTIONS

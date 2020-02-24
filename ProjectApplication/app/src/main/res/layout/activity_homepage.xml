@@ -11,13 +11,28 @@
         android:id="@+id/btnStart"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="120dp"
+        android:layout_marginBottom="16dp"
+        android:gravity="center"
         android:onClick="startGame"
         android:text="Start Game"
         android:textAppearance="@style/buttonText"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/btnLevelSelect"
+        app:layout_constraintBottom_toTopOf="@id/btnLevelSelect"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/btnLevelSelect"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="LevelSelect"
+        android:text="Select Level"
+        android:textAppearance="@style/buttonText"
+        app:layout_constraintBottom_toTopOf="@id/lblTotalScore"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/btnStart"
         app:layout_constraintVertical_bias="0.415" />
 
     <TextView
@@ -30,7 +45,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.499"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnStart" />
+        app:layout_constraintTop_toBottomOf="@+id/btnLevelSelect" />
 
     <TextView
         android:id="@+id/tvTotalScore"
@@ -44,16 +59,15 @@
         app:layout_constraintTop_toBottomOf="@+id/lblTotalScore" />
 
     <Button
-        android:id="@+id/btnLevelSelect"
+        android:id="@+id/button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:onClick="LevelSelect"
-        android:text="Select Level"
-        android:textAppearance="@style/buttonText"
+        android:layout_marginStart="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginBottom="16dp"
+        android:onClick="resetScores"
+        android:text="DEBUG - RESET SCORES"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/btnStart"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.415" />
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

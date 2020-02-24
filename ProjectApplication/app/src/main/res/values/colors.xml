@@ -11,4 +11,5 @@
     <color name="buttonText">#000000</color>
     <color name="correctText">#06D6A0</color>
     <color name="disabledButton">#B5B5B5</color>
+    <color name="goldstar">#FFDF00</color>
 </resources>
