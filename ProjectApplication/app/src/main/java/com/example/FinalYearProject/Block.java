@@ -1,6 +1,8 @@
 package com.example.FinalYearProject;
 
-public class Block {
+import java.io.Serializable;
+
+public class Block implements Serializable {
 
     private int current;
     private int original;

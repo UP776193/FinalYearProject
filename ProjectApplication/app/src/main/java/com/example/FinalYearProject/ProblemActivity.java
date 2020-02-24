@@ -27,12 +27,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import java.util.ArrayList;
 import java.util.Random;
 
-import static com.example.FinalYearProject.HomepageActivity.pl;
 import static com.example.FinalYearProject.HomepageActivity.scores;
 
 @RequiresApi(api = Build.VERSION_CODES.M)
 public class ProblemActivity extends AppCompatActivity {
 
+    private ArrayList<Problem> playlist;
     private Problem problem;
     private TextView[] blocks; //Used to keep track of movable blocks in activity
     private ArrayList<Slot> slots;
@@ -59,11 +59,15 @@ public class ProblemActivity extends AppCompatActivity {
         slots = new ArrayList<>();
 
         numHints = MAX_NUMBER_HINTS;
-
         ((Button) findViewById(R.id.btnHint)).setText("Hint (" + numHints + ")");
 
-        problemIndex = getIntent().getIntExtra("problemID",-1);
-        problem = pl.get(problemIndex);
+        Intent intent = getIntent();
+        Bundle extras = intent.getExtras();
+
+        problemIndex = extras.getInt("PROBLEM_ID");
+        playlist = (ArrayList) extras.getSerializable("PLAYLIST");
+
+        problem = playlist.get(problemIndex);
         probBlocks = problem.getBlocks();
         printProblemLines();
         setupBlocks();
@@ -229,7 +233,7 @@ public class ProblemActivity extends AppCompatActivity {
 
     public void back(View view) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Go Back");
+        builder.setTitle("Go back");
         builder.setMessage("Are you sure you want to return to the homepage? All unsaved progress will be lost.");
         builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
@@ -286,7 +290,7 @@ public class ProblemActivity extends AppCompatActivity {
         } else {
                 builder.setTitle("NOT COMPLETE");
                 builder.setMessage("There seems to be some empty slots!");
-                builder.setNeutralButton("Go Back", new DialogInterface.OnClickListener() {
+                builder.setNeutralButton("Go back", new DialogInterface.OnClickListener() {
                     @RequiresApi(api = Build.VERSION_CODES.M)
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
@@ -348,12 +352,15 @@ public class ProblemActivity extends AppCompatActivity {
     public void nextProblem() {
         Intent intent = new Intent(this, ProblemActivity.class);
         int pi = problemIndex;
-        if(pi + 1 == pl.size()) {
+        if(pi + 1 == playlist.size()) {
             pi = 0;
         } else {
             pi++;
         }
-        intent.putExtra("problemID", pi);
+        Bundle extras = new Bundle();
+        extras.putInt("PROBLEM_ID",pi);
+        extras.putSerializable("PLAYLIST",playlist);
+        intent.putExtras(extras);
         startActivity(intent);
         finish();
     }

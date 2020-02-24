@@ -26,7 +26,7 @@
         android:id="@+id/btnLevelSelect"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:onClick="LevelSelect"
+        android:onClick="levelSelect"
         android:text="Select Level"
         android:textAppearance="@style/buttonText"
         app:layout_constraintBottom_toTopOf="@id/lblTotalScore"

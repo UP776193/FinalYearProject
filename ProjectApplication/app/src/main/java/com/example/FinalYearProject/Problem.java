@@ -1,6 +1,8 @@
 package com.example.FinalYearProject;
 
-public class Problem {
+import java.io.Serializable;
+
+public class Problem implements Serializable {
 
     private int problemID;
     private Block[] blocks;
@@ -9,7 +11,7 @@ public class Problem {
     private String[] solution;
     private String tags;
 
-    public Problem(int problemID, String probDesc, String tags ,String[][] probLines, String[] solution, String[] blocks) {
+    public Problem(int problemID, String probDesc, String tags ,String[][] probLines, String[] solution, String[] blocks){
         this.problemID = problemID;
         this.probDesc = probDesc;
         this.probLines = probLines;

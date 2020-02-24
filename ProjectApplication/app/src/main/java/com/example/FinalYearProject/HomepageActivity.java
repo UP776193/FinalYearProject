@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 public class HomepageActivity extends AppCompatActivity {
@@ -27,13 +28,19 @@ public class HomepageActivity extends AppCompatActivity {
     }
 
     public void startGame(View view){
+        ArrayList<Problem> problems = new PlaylistConstructor().allProblems();
         Intent intent = new Intent(this, ProblemActivity.class);
-        intent.putExtra("problemID",0);
+
+        Bundle extras = new Bundle();
+        extras.putInt("PROBLEM_ID",0);
+        extras.putSerializable("PLAYLIST",problems);
+        intent.putExtras(extras);
+
         startActivity(intent);
         finish();
     }
 
-    public void LevelSelect(View view) {
+    public void levelSelect(View view) {
         Intent intent = new Intent(this, LevelSelect.class);
         startActivity(intent);
         finish();

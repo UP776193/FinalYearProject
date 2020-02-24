@@ -17,6 +17,8 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+
 @RequiresApi(api = Build.VERSION_CODES.M)
 public class LevelSelect extends AppCompatActivity {
 
@@ -37,7 +39,6 @@ public class LevelSelect extends AppCompatActivity {
             TextView tv = new TextView(this);
             tv.setTextAppearance(R.style.problemText);
             tv.setTextSize(18);
-            //String text = "Level " + (i+1) + " : " + scores.get(i) + "/100";
             Spannable span = constructSpannable("Level " + (i+1) + " : ", scores.get(i));
             tv.setText(span);
             tv.setLayoutParams(params);
@@ -71,15 +72,62 @@ public class LevelSelect extends AppCompatActivity {
         return toSpan;
     }
 
-    public void Back(View view) {
+    public void back(View view) {
         Intent intent = new Intent(this, HomepageActivity.class);
         startActivity(intent);
         finish();
     }
 
     public void toLevel(int level) {
+        ArrayList<Problem> problems = new PlaylistConstructor().allProblems();
         Intent intent = new Intent(this, ProblemActivity.class);
-        intent.putExtra("problemID",level);
+
+        Bundle extras = new Bundle();
+        extras.putInt("PROBLEM_ID",0);
+        extras.putSerializable("PLAYLIST",problems);
+        intent.putExtras(extras);
+
+        startActivity(intent);
+        finish();
+    }
+
+    public void playAll(View view) {
+        ArrayList<Problem> problems = new PlaylistConstructor().allProblems();
+        Intent intent = new Intent(this, ProblemActivity.class);
+
+        Bundle extras = new Bundle();
+        extras.putInt("PROBLEM_ID",0);
+        extras.putSerializable("PLAYLIST",problems);
+        intent.putExtras(extras);
+
+        startActivity(intent);
+        finish();
+    }
+
+    public void playLoops(View view) {
+        PlaylistConstructor pc = new PlaylistConstructor();
+        ArrayList<Problem> problems = pc.filterLoops(pc.allProblems());
+        Intent intent = new Intent(this, ProblemActivity.class);
+
+        Bundle extras = new Bundle();
+        extras.putInt("PROBLEM_ID",0);
+        extras.putSerializable("PLAYLIST",problems);
+        intent.putExtras(extras);
+
+        startActivity(intent);
+        finish();
+    }
+
+    public void playIfs(View view) {
+        PlaylistConstructor pc = new PlaylistConstructor();
+        ArrayList<Problem> problems = pc.filterIfs(pc.allProblems());
+        Intent intent = new Intent(this, ProblemActivity.class);
+
+        Bundle extras = new Bundle();
+        extras.putInt("PROBLEM_ID",0);
+        extras.putSerializable("PLAYLIST",problems);
+        intent.putExtras(extras);
+
         startActivity(intent);
         finish();
     }
