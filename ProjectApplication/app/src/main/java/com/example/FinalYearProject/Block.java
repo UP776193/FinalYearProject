@@ -18,8 +18,8 @@ public class Block {
     }
 
     public void updateCurrent(int newCurrent) {
-        this.setCurrent(this.getPrevious());
-        this.setPrevious(newCurrent);
+        this.setPrevious(this.current);
+        this.setCurrent(newCurrent);
     }
 
     public void resetBlock() {

@@ -360,39 +360,8 @@ public class ProblemActivity extends AppCompatActivity {
 
     public void giveHint(View view) {
         //update score
+        hint();
         updateScore(-25);
-
-        //take a random slot
-        int slotID = (new Random()).nextInt(slots.size());
-        Slot slot = slots.get(slotID);
-
-        if(!slot.isEmpty()) {
-            //reset original block
-            String currentText = slot.getCurrentText();
-            resetBlock(currentText);
-        }
-
-        String[] solution = problem.getSolution();
-        String correctAnswer = solution[slotID];
-
-        int blockID;
-        try {
-            blockID = findProbBlock(correctAnswer);
-            disableBlock(blocks[blockID]);
-        } catch(MissingBlockException ex) {
-            ex.printStackTrace();
-        }
-
-        slot.setCorrect();
-        slot.setCurrentText(solution[slotID]);
-
-        for(Slot _slot : slots) {
-            if(_slot.getText().equals(slot.getCurrentText()) && _slot != slot) {
-                _slot.resetCurrentText();
-                _slot.setOnTouchListener(null);
-                _slot.setEmpty();
-            }
-        }
         numHints -= 1;
         if(numHints == 0) {
             //set hint button to be disabled if run out of hints
@@ -402,6 +371,84 @@ public class ProblemActivity extends AppCompatActivity {
             btnHint.getBackground().setColorFilter(Color.GRAY, PorterDuff.Mode.MULTIPLY);
         } else {
             ((Button) findViewById(R.id.btnHint)).setText("Hint (" + numHints + ")");
+        }
+    }
+
+    public void hint() {
+        String[] solution = problem.getSolution();
+        if(probBlocks.length <= solution.length){
+            //give an answer
+            //take a random slot
+            int slotID = (new Random()).nextInt(slots.size());
+            Slot slot = slots.get(slotID);
+
+            if(!slot.isEmpty()) {
+                //reset original block
+                String currentText = slot.getCurrentText();
+                resetBlock(currentText);
+            }
+
+            solution = problem.getSolution();
+            String correctAnswer = solution[slotID];
+
+            int blockID;
+            try {
+                blockID = findProbBlock(correctAnswer);
+                disableBlock(blocks[blockID]);
+            } catch(MissingBlockException ex) {
+                ex.printStackTrace();
+            }
+
+            slot.setCorrect();
+            slot.setCurrentText(solution[slotID]);
+
+            for(Slot _slot : slots) {
+                if(_slot.getText().equals(slot.getCurrentText()) && _slot != slot) {
+                    _slot.resetCurrentText();
+                    _slot.setOnTouchListener(null);
+                    _slot.setEmpty();
+                }
+            }
+        } else {
+            //disable one of the unused blocks
+            ArrayList<String> notneeded = new ArrayList();
+            for(Block b : probBlocks) {
+                notneeded.add(b.getText());
+            }
+            for(String s : solution) {
+                if(notneeded.contains(s)) {
+                    notneeded.remove(s);
+                }
+            }
+
+           int i = (new Random()).nextInt(notneeded.size());
+           String blocktext = notneeded.get(i);
+
+           int blockID = 0;
+           try {
+               blockID = findProbBlock(blocktext);
+           } catch (MissingBlockException ex) {
+               ex.printStackTrace();
+           }
+
+           Block block = probBlocks[blockID];
+
+           if(block.getCurrent() == block.getOriginal()) {
+               //block has not been moved anywhere
+               disableBlock(blocks[blockID]);
+               blocks[blockID].setBackgroundResource(R.color.disabledButton);
+           } else {
+               int slotID = 0;
+               for(int j=0;j<slots.size();j++) {
+                   if(slots.get(j).getCurrentText() == blocktext) {
+                       slotID = j;
+                   }
+               }
+               slots.get(slotID).setEmpty();
+               resetBlock(blocktext);
+               disableBlock(blocks[blockID]);
+               blocks[blockID].setBackgroundResource(R.color.disabledButton);
+           }
         }
     }
 

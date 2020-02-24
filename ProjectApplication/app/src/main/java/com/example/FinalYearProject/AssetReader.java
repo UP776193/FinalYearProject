@@ -51,6 +51,8 @@ public class AssetReader {
                 //read problem description
                 String problemDesc = scanner.nextLine();
 
+                String[] tags = scanner.nextLine().split(",");
+
                 //read solution
                 String[] solution = scanner.nextLine().split(",");
 
@@ -66,7 +68,7 @@ public class AssetReader {
                     problemLines[i] = scanner.nextLine().split(",");
                 }
 
-                problem = new Problem(problemList.size(), problemDesc, problemLines, solution, blocks);
+                problem = new Problem(problemList.size(), problemDesc, tags, problemLines, solution, blocks);
                 problemList.add(problem);
             }
         } catch (IOException ex) {
