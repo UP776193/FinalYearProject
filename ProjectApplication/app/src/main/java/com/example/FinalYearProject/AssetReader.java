@@ -51,7 +51,7 @@ public class AssetReader {
                 //read problem description
                 String problemDesc = scanner.nextLine();
 
-                String[] tags = scanner.nextLine().split(",");
+                String tags = scanner.nextLine();
 
                 //read solution
                 String[] solution = scanner.nextLine().split(",");
