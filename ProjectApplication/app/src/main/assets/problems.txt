@@ -1,4 +1,5 @@
 Drag Blocks into their correct position on the algorithm. Expected output from x = 25.
+LOOPS
 int,++,5,x
 x`VAR,5`CON,--`OP,int`DT,String`DT,1`CON,++`OP,Boolean`DT
 7
@@ -10,6 +11,7 @@ public int addTo25() {
   return,`VAR,;
 }
 isEven should return true if number is even, or false if it is odd.
+IF
 2,true,false
 2`CON,true`CON,false`CON
 7

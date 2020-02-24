@@ -7,12 +7,14 @@ public class Problem {
     private String probDesc;
     private String[][] probLines;
     private String[] solution;
+    private String tags;
 
-    public Problem(int problemID, String probDesc, String[][] probLines, String[] solution, String[] blocks) {
+    public Problem(int problemID, String probDesc, String tags ,String[][] probLines, String[] solution, String[] blocks) {
         this.problemID = problemID;
         this.probDesc = probDesc;
         this.probLines = probLines;
         this.solution = solution;
+        this.tags = tags;
         this.blocks = new Block[blocks.length];
         for(int i=0;i<blocks.length;i++) {
             String[] text = blocks[i].split("`");
@@ -78,5 +80,13 @@ public class Problem {
 
     public void setProblemID(int problemID) {
         this.problemID = problemID;
+    }
+
+    public String getTags() {
+        return tags;
+    }
+
+    public void setTags(String tags) {
+        this.tags = tags;
     }
 }
