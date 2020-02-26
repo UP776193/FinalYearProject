@@ -22,9 +22,6 @@ public class HomepageActivity extends AppCompatActivity {
         AssetReader ar = new AssetReader(this);
         pl = ar.getProblemList();
         scores = ar.getScoreList();
-        int t = totalScore();
-        TextView tvTotalScore = findViewById(R.id.tvTotalScore);
-        tvTotalScore.setText(String.valueOf(t));
     }
 
     public void startGame(View view){
@@ -46,14 +43,6 @@ public class HomepageActivity extends AppCompatActivity {
         finish();
     }
 
-    private int totalScore() {
-        int t = 0;
-        for(Integer score: scores) {
-            t += score;
-        }
-        return t;
-    }
-
     public void resetScores(View view) {
         for(int i=0;i<scores.size();i++) {
             scores.set(i, 0);
@@ -61,5 +50,4 @@ public class HomepageActivity extends AppCompatActivity {
         AssetWriter aw = new AssetWriter(this);
         aw.writeScores();
     }
-
 }
