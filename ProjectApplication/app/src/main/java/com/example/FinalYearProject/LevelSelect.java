@@ -83,7 +83,7 @@ public class LevelSelect extends AppCompatActivity {
         Intent intent = new Intent(this, ProblemActivity.class);
 
         Bundle extras = new Bundle();
-        extras.putInt("PROBLEM_ID",0);
+        extras.putInt("PROBLEM_ID",level);
         extras.putSerializable("PLAYLIST",problems);
         intent.putExtras(extras);
 
