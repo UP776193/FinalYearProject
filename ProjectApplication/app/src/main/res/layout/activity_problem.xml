@@ -99,7 +99,7 @@
             android:onClick="viewProblem"
             android:text="View Problem"
             android:textAppearance="@style/buttonText"
-            android:textSize="12sp"
+            android:textSize="14sp"
             app:layout_constraintBottom_toTopOf="@id/blockLayout"
             app:layout_constraintEnd_toStartOf="@id/btnHint"
             app:layout_constraintStart_toStartOf="parent"

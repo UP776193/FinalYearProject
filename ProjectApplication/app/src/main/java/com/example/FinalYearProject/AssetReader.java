@@ -75,7 +75,7 @@ public class AssetReader {
             System.out.println("CRASH: System failed to read text input.");
             return;
         } catch (Exception ex) {
-            System.out.println("CRASH: " + ex.getMessage());
+            System.out.println("CRASH Reading attempt failed: " + ex.getMessage());
             ex.printStackTrace();
         }
         System.out.println("Setup: number of problems" + problemList.size());
@@ -107,6 +107,11 @@ public class AssetReader {
             ex.printStackTrace();
         } catch (ClassNotFoundException ex) {
             ex.printStackTrace();
+        }
+        if(scoreList.size() < problemList.size()) {
+            for(int i = scoreList.size(); i < problemList.size(); i++) {
+                scoreList.add(0);
+            }
         }
     }
 }
