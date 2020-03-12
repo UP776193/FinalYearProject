@@ -337,7 +337,7 @@ public class ProblemActivity extends AppCompatActivity {
             case OPERATOR:
                 return("You have a logic error, are you using the operators in a way that will achieve the final result?");
             case CONSTANT:
-                return("You have a logic error, consider what the final result should be when the function runs.");
+                return("You have an error, consider what the final result should be when the function runs and whether you are using the correct data types.");
             case VARIABLE:
                 return("You have used a variable in the wrong place, consider the final result and the data type of the variable.");
             case DATATYPE:
