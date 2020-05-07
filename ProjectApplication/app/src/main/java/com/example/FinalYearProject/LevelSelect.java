@@ -28,6 +28,9 @@ public class LevelSelect extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_level_select);
         populateLevels();
+        TextView tvScore = findViewById(R.id.tvScore);
+        int t = totalScore();
+        tvScore.setText(String.valueOf(t));
     }
 
     public void populateLevels() {
@@ -139,6 +142,14 @@ public class LevelSelect extends AppCompatActivity {
             int level = Integer.parseInt(text[1]) - 1;
             toLevel(level);
         }
+    }
+
+    private int totalScore() {
+        int t = 0;
+        for(Integer score: scores) {
+            t += score;
+        }
+        return t;
     }
 
 }
